@@ -1,0 +1,1246 @@
+/* 
+   ====================================================
+   🌌 WORLD OF WARCREST - Retro WoW UI Design System 🌌
+   ====================================================
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@300;400;600;700&display=swap');
+
+/* CSS Variables for Nostalgic Colors & Constants */
+:root {
+  --wow-black: #050508;
+  --wow-stone: #111116;
+  --wow-slate: #1c1d24;
+  --wow-panel: rgba(22, 23, 30, 0.95);
+  --wow-parchment: #221d15;
+  --wow-border-gold: #b38f29;
+  --wow-border-dark: #3a2e1d;
+  --wow-text-gold: #ffd100;
+  --wow-text-silver: #e6e6e6;
+  --wow-text-copper: #c77d3a;
+  --wow-text-primary: #f0ebe0;
+  --wow-text-muted: #9d9d9d;
+
+  /* Rarity Colors */
+  --rarity-poor: #9d9d9d;
+  --rarity-common: #ffffff;
+  --rarity-uncommon: #1eff00;
+  --rarity-rare: #0070dd;
+  --rarity-epic: #a335ee;
+  --rarity-legendary: #ff8000;
+
+  /* Class Colors */
+  --class-warrior: #c79c6e;
+  --class-mage: #69ccf0;
+  --class-rogue: #fff569;
+  --class-priest: #ffffff;
+  --class-paladin: #f58cba;
+
+  /* Progress Bars */
+  --bar-hp: #22c55e;
+  --bar-mana: #3b82f6;
+  --bar-xp: #eab308;
+  --bar-quest: #f97316;
+}
+
+/* Reset & Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--wow-black);
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(30, 20, 10, 0.4) 0%, rgba(5, 5, 8, 1) 70%),
+    url('https://www.transparenttextures.com/patterns/dark-matter.png');
+  font-family: 'Inter', sans-serif;
+  color: var(--wow-text-primary);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  color: var(--wow-text-gold);
+  letter-spacing: 1px;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--wow-black);
+  border-left: 1px solid var(--wow-border-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--wow-border-dark);
+  border: 1px solid var(--wow-border-gold);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--wow-border-gold);
+}
+
+/* Main Layout Grid */
+.game-container {
+  display: grid;
+  grid-template-columns: 240px 1fr 280px;
+  grid-template-rows: 70px 1fr 140px;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ==========================================
+   HEADER SECTION
+   ========================================== */
+header {
+  grid-column: 1 / -1;
+  background-color: var(--wow-stone);
+  border-bottom: 2px solid var(--wow-border-gold);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+  z-index: 10;
+}
+
+.logo-section h1 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  text-shadow: 0 0 10px rgba(255, 209, 0, 0.4), 2px 2px 2px #000;
+  background: linear-gradient(135deg, #ffe169 0%, #ffd100 50%, #b38f29 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.currency-section {
+  display: flex;
+  gap: 15px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--wow-border-dark);
+  font-weight: 700;
+}
+
+.currency-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: monospace;
+  font-size: 1.1rem;
+}
+
+.coin-badge {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.4), 0 1px 2px rgba(0,0,0,0.6);
+  border: 1px solid rgba(0,0,0,0.5);
+  margin-left: 3px;
+}
+
+.coin-badge.gold {
+  background: radial-gradient(circle at 4px 4px, #ffe875, #ffd100 60%, #b38f29);
+}
+
+.coin-badge.silver {
+  background: radial-gradient(circle at 4px 4px, #ffffff, #c0c0c0 60%, #808080);
+}
+
+.coin-badge.copper {
+  background: radial-gradient(circle at 4px 4px, #ffd1a4, #d17a22 60%, #804000);
+}
+
+.currency-gold { color: var(--wow-text-gold); }
+.currency-silver { color: var(--wow-text-silver); }
+.currency-copper { color: var(--wow-text-copper); }
+
+.summary-stats {
+  display: flex;
+  gap: 20px;
+  color: var(--wow-text-muted);
+  font-size: 0.9rem;
+}
+
+.summary-stats span strong {
+  color: var(--wow-text-primary);
+}
+
+/* ==========================================
+   LEFT SIDEBAR (TABS NAVIGATION)
+   ========================================== */
+.left-sidebar {
+  background-color: var(--wow-stone);
+  border-right: 2px solid var(--wow-border-gold);
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.nav-button {
+  background: linear-gradient(180deg, #24222b 0%, #17161e 100%);
+  border: 1px solid var(--wow-border-dark);
+  color: var(--wow-text-primary);
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  padding: 12px 15px;
+  text-align: left;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-button::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: transparent;
+  transition: background-color 0.2s;
+}
+
+.nav-button:hover {
+  background: linear-gradient(180deg, #322f3c 0%, #1e1d27 100%);
+  border-color: var(--wow-border-gold);
+  color: var(--wow-text-gold);
+  box-shadow: 0 0 8px rgba(179, 143, 41, 0.3);
+}
+
+.nav-button.active {
+  background: linear-gradient(180deg, #443c2d 0%, #221d15 100%);
+  border-color: var(--wow-border-gold);
+  color: var(--wow-text-gold);
+  font-weight: 700;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+}
+
+.nav-button.active::before {
+  background-color: var(--wow-border-gold);
+}
+
+.nav-button .badge {
+  background: #dc2626;
+  color: #fff;
+  font-family: monospace;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: auto;
+}
+
+/* ==========================================
+   MAIN GAME VIEW AREA
+   ========================================== */
+main {
+  background: 
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)),
+    url('https://www.transparenttextures.com/patterns/dark-paths.png');
+  padding: 20px;
+  overflow-y: auto;
+  position: relative;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Base Panel Styles */
+.wow-panel {
+  background-color: var(--wow-panel);
+  border: 2px solid var(--wow-border-gold);
+  border-radius: 6px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.wow-panel::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border: 1px solid var(--wow-border-dark);
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+.panel-title {
+  border-bottom: 1px solid var(--wow-border-dark);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Button UI */
+.wow-button {
+  background: linear-gradient(180deg, #f39c12 0%, #d35400 100%);
+  border: 1px solid #e67e22;
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-shadow: 1px 1px 1px #000;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+}
+
+.wow-button:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f1c40f 0%, #e67e22 100%);
+  border-color: #f39c12;
+  box-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+  transform: translateY(-1px);
+}
+
+.wow-button:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.wow-button:disabled {
+  background: #333;
+  border-color: #444;
+  color: #666;
+  text-shadow: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.wow-button.secondary {
+  background: linear-gradient(180deg, #7f8c8d 0%, #2c3e50 100%);
+  border-color: #95a5a6;
+}
+
+.wow-button.secondary:hover {
+  background: linear-gradient(180deg, #95a5a6 0%, #34495e 100%);
+  border-color: #bdc3c7;
+}
+
+/* Progress Bars */
+.progress-container {
+  background: #000;
+  border: 1px solid var(--wow-border-dark);
+  border-radius: 4px;
+  height: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.9);
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  transition: width 0.1s linear;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.2);
+}
+
+.progress-bar.hp { background-color: var(--bar-hp); }
+.progress-bar.mana { background-color: var(--bar-mana); }
+.progress-bar.xp { background-color: var(--bar-xp); }
+.progress-bar.quest { background-color: var(--bar-quest); }
+
+.progress-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000;
+  pointer-events: none;
+}
+
+/* ==========================================
+   SUB-PANEL COMPONENT VIEWS (TABS CONTENT)
+   ========================================== */
+
+/* --- HEROES TAB --- */
+.heroes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.hero-card {
+  background: rgba(12, 13, 17, 0.8);
+  border: 1px solid var(--wow-border-dark);
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 0.2s;
+  position: relative;
+}
+
+.hero-card:hover {
+  border-color: var(--wow-border-gold);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+.hero-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 8px;
+}
+
+.hero-name-class h3 {
+  font-size: 1.1rem;
+}
+
+.hero-class-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+.class-warrior { background: rgba(199, 156, 110, 0.15); color: var(--class-warrior); }
+.class-mage { background: rgba(105, 204, 240, 0.15); color: var(--class-mage); }
+.class-rogue { background: rgba(255, 245, 105, 0.15); color: var(--class-rogue); }
+.class-priest { background: rgba(255, 255, 255, 0.15); color: var(--class-priest); }
+.class-paladin { background: rgba(245, 140, 186, 0.15); color: var(--class-paladin); }
+
+.hero-level {
+  background: var(--wow-border-dark);
+  border: 1px solid var(--wow-border-gold);
+  color: var(--wow-text-gold);
+  font-family: monospace;
+  font-weight: 700;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.hero-stats-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 0.8rem;
+  background: rgba(0,0,0,0.3);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--wow-text-muted);
+}
+
+.stat-row span strong {
+  color: var(--wow-text-primary);
+}
+
+.hero-card-model {
+  height: 150px;
+  border: 1.5px solid var(--wow-border-dark);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.95), 0 5px 15px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 8px 0;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center 20%;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.hero-card-model:hover {
+  border-color: var(--wow-border-gold);
+  transform: scale(1.02);
+  box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.35), 0 8px 25px rgba(0, 0, 0, 0.7);
+}
+
+/* Class Portrait Mappings */
+.hero-card-model.class-warrior {
+  background-image: url('assets/warrior.png');
+}
+.hero-card-model.class-mage {
+  background-image: url('assets/mage.png');
+}
+.hero-card-model.class-rogue {
+  background-image: url('assets/rogue.png');
+}
+.hero-card-model.class-priest {
+  background-image: url('assets/priest.png');
+}
+.hero-card-model.class-paladin {
+  background-image: url('assets/paladin.png');
+}
+
+/* Linear gradient overlay to make text pop and give deep vignette feel */
+.hero-card-model-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(0, 0, 0, 0) 100%);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.hero-card-model:hover .hero-card-model-overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 100%);
+}
+
+.hero-card-model-text {
+  position: relative;
+  z-index: 2;
+  font-size: 0.72rem;
+  color: var(--wow-text-muted);
+  text-shadow: 1px 1px 3px #000;
+  padding: 8px 12px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.hero-card-model:hover .hero-card-model-text {
+  color: #fff;
+}
+
+.eq-slot {
+  aspect-ratio: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px dashed var(--wow-border-dark);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.eq-slot:hover {
+  border-color: var(--wow-border-gold);
+  background: rgba(179, 143, 41, 0.1);
+}
+
+.eq-slot.equipped {
+  border-style: solid;
+  border-width: 2px;
+}
+
+.eq-slot .slot-icon {
+  font-size: 1.2rem;
+  color: var(--wow-border-dark);
+}
+
+.eq-slot .item-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  border: 1px solid transparent;
+}
+
+/* Rarity Glow Classes */
+.rarity-glow-0 { border-color: var(--rarity-poor) !important; box-shadow: inset 0 0 5px rgba(157, 157, 157, 0.3); }
+.rarity-glow-1 { border-color: var(--rarity-common) !important; box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.3); }
+.rarity-glow-2 { border-color: var(--rarity-uncommon) !important; box-shadow: inset 0 0 5px rgba(30, 255, 0, 0.4); }
+.rarity-glow-3 { border-color: var(--rarity-rare) !important; box-shadow: inset 0 0 5px rgba(0, 112, 221, 0.5); }
+.rarity-glow-4 { border-color: var(--rarity-epic) !important; box-shadow: inset 0 0 5px rgba(163, 53, 238, 0.6); }
+.rarity-glow-5 { border-color: var(--rarity-legendary) !important; box-shadow: inset 0 0 8px rgba(255, 128, 0, 0.7); }
+
+.hero-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.status-badge {
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-idle { color: var(--rarity-uncommon); }
+.status-questing { color: var(--rarity-legendary); }
+.status-dead { color: #dc2626; }
+
+/* Hire Hero Card */
+.hire-hero-card {
+  border: 1px dashed var(--wow-border-gold);
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  gap: 15px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.hire-hero-card:hover {
+  background: rgba(179, 143, 41, 0.05);
+  border-style: solid;
+}
+
+.hire-hero-card .plus-icon {
+  font-size: 2.5rem;
+  color: var(--wow-border-gold);
+  line-height: 1;
+}
+
+/* --- QUESTS TAB --- */
+.quests-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+}
+
+.zone-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.zone-button {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--wow-border-dark);
+  color: var(--wow-text-primary);
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  padding: 10px 15px;
+  border-radius: 4px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.zone-button:hover {
+  border-color: var(--wow-border-gold);
+  color: var(--wow-text-gold);
+}
+
+.zone-button.active {
+  background: rgba(179, 143, 41, 0.1);
+  border-color: var(--wow-border-gold);
+  color: var(--wow-text-gold);
+  font-weight: 700;
+}
+
+.zone-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--wow-border-dark);
+  padding-bottom: 8px;
+}
+
+.enemy-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 15px;
+}
+
+.enemy-card {
+  background: rgba(12, 13, 17, 0.8);
+  border: 1px solid var(--wow-border-dark);
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.enemy-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.enemy-card-header h3 {
+  font-size: 1rem;
+}
+
+.enemy-level-tag {
+  background: #333;
+  color: #ffd100;
+  font-family: monospace;
+  font-size: 0.75rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.enemy-details {
+  font-size: 0.8rem;
+  background: rgba(0,0,0,0.3);
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.enemy-drops {
+  color: var(--wow-text-muted);
+}
+
+.enemy-drops span {
+  color: var(--wow-text-primary);
+  display: inline-block;
+  margin-right: 4px;
+}
+
+/* --- CRAFTING TAB --- */
+.crafting-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+}
+
+.crafter-info-box {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--wow-border-dark);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.crafter-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recipe-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 15px;
+}
+
+.recipe-card {
+  background: rgba(12, 13, 17, 0.8);
+  border: 1px solid var(--wow-border-dark);
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recipe-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.recipe-card-header h3 {
+  font-size: 1rem;
+}
+
+.recipe-level-req {
+  font-size: 0.75rem;
+  color: var(--wow-text-muted);
+  margin-left: auto;
+}
+
+.recipe-mats {
+  font-size: 0.75rem;
+  background: rgba(0,0,0,0.3);
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mat-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.mat-row.met { color: var(--rarity-uncommon); }
+.mat-row.unmet { color: #ef4444; }
+
+/* --- INVENTORY TAB --- */
+.inventory-stats {
+  display: flex;
+  justify-content: space-between;
+  color: var(--wow-text-muted);
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid var(--wow-border-dark);
+  border-radius: 6px;
+  padding: 15px;
+  min-height: 200px;
+  align-content: start;
+}
+
+.inv-slot {
+  aspect-ratio: 1;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--wow-border-dark);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.inv-slot:hover {
+  border-color: var(--wow-border-gold);
+  background: rgba(179, 143, 41, 0.05);
+}
+
+.inv-slot .slot-item-icon {
+  font-size: 1.8rem;
+}
+
+.inv-slot .item-quantity {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000;
+  pointer-events: none;
+}
+
+.inv-slot .item-glow {
+  position: absolute;
+  inset: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+}
+
+/* --- MARKET/AUCTION TAB --- */
+.market-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.customer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.customer-card {
+  background: rgba(12, 13, 17, 0.8);
+  border: 1px solid var(--wow-border-dark);
+  border-radius: 6px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.customer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.customer-avatar {
+  width: 32px;
+  height: 32px;
+  background: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: 1px solid var(--wow-border-gold);
+}
+
+.customer-header h3 {
+  font-size: 1rem;
+}
+
+.customer-offer {
+  font-size: 0.85rem;
+  background: rgba(0,0,0,0.3);
+  padding: 10px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.customer-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Rarity Typography Classes */
+.text-rarity-0 { color: var(--rarity-poor); }
+.text-rarity-1 { color: var(--rarity-common); }
+.text-rarity-2 { color: var(--rarity-uncommon); font-weight: 600; }
+.text-rarity-3 { color: var(--rarity-rare); font-weight: 600; text-shadow: 0 0 4px rgba(0,112,221,0.2); }
+.text-rarity-4 { color: var(--rarity-epic); font-weight: 700; text-shadow: 0 0 6px rgba(163,53,238,0.3); }
+.text-rarity-5 { color: var(--rarity-legendary); font-weight: 700; text-shadow: 0 0 8px rgba(255,128,0,0.4); }
+
+/* Modal Styles */
+.wow-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.wow-modal.active {
+  display: flex;
+}
+
+#modal-select-equip {
+  z-index: 2000 !important;
+}
+
+.wow-modal-content {
+  background-color: var(--wow-stone);
+  border: 2px solid var(--wow-border-gold);
+  border-radius: 6px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.9);
+  animation: slideIn 0.2s ease-out;
+  position: relative;
+}
+
+.wow-modal-content::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border: 1px solid var(--wow-border-dark);
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--wow-border-dark);
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body {
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--wow-border-dark);
+  padding: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ==========================================
+   RIGHT SIDEBAR (ACTIVE ADVENTURES)
+   ========================================== */
+.right-sidebar {
+  background-color: var(--wow-stone);
+  border-left: 2px solid var(--wow-border-gold);
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+}
+
+.active-adventure-card {
+  background: rgba(12, 13, 17, 0.8);
+  border: 1px solid var(--wow-border-dark);
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 4px;
+}
+
+.adv-hero {
+  font-weight: 700;
+}
+
+.adv-timer {
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--wow-text-gold);
+}
+
+.adv-target {
+  color: var(--wow-text-muted);
+}
+
+/* ==========================================
+   FOOTER SECTION (BARRENS CHAT LOG)
+   ========================================== */
+footer {
+  grid-column: 1 / -1;
+  background-color: var(--wow-stone);
+  border-top: 2px solid var(--wow-border-gold);
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  align-items: stretch;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.7);
+  z-index: 10;
+}
+
+.chat-label {
+  background: linear-gradient(90deg, rgba(36,34,43,1) 0%, rgba(23,22,30,1) 100%);
+  border-right: 1px solid var(--wow-border-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--wow-text-gold);
+}
+
+.chat-log {
+  padding: 10px 15px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #020204;
+}
+
+.chat-message {
+  animation: slideChatIn 0.2s ease-out;
+}
+
+@keyframes slideChatIn {
+  from { opacity: 0; transform: translateX(5px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.chat-user {
+  color: #abd473; /* Hunter Green */
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chat-channel {
+  color: #ffd100;
+  margin-right: 4px;
+}
+
+.chat-text {
+  color: #fff;
+}
+
+/* Responsive Overrides */
+@media (max-width: 1024px) {
+  .game-container {
+    grid-template-columns: 80px 1fr;
+    grid-template-rows: 60px 1fr 120px;
+  }
+  .left-sidebar .nav-button span,
+  .left-sidebar .nav-button .badge {
+    display: none;
+  }
+  .left-sidebar {
+    padding: 10px 5px;
+  }
+  .right-sidebar {
+    display: none;
+  }
+}
+
+/* ==========================================
+   ADVANCED COMBAT REPLAY & REPORT STYLES
+   ========================================== */
+
+/* completed quest cards pulsing highlight */
+.active-adventure-card.completed-pulse {
+  border: 1px solid var(--wow-border-gold);
+  animation: completedPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes completedPulse {
+  0% { box-shadow: 0 0 2px #d35400, inset 0 0 2px rgba(243, 156, 18, 0.2); border-color: #d35400; }
+  50% { box-shadow: 0 0 14px #f1c40f, inset 0 0 8px rgba(241, 196, 15, 0.4); border-color: #fbbf24; }
+  100% { box-shadow: 0 0 2px #d35400, inset 0 0 2px rgba(243, 156, 18, 0.2); border-color: #d35400; }
+}
+
+/* hit flashes on damage */
+.hit-flash {
+  animation: hitFlashAnim 0.3s ease-out;
+}
+
+@keyframes hitFlashAnim {
+  0% { filter: brightness(1.8) drop-shadow(0 0 8px #ef4444); background-color: rgba(239, 68, 68, 0.25) !important; }
+  100% { filter: brightness(1.0); }
+}
+
+.heal-flash {
+  animation: healFlashAnim 0.3s ease-out;
+}
+
+@keyframes healFlashAnim {
+  0% { filter: brightness(1.8) drop-shadow(0 0 8px #22c55e); background-color: rgba(34, 197, 94, 0.25) !important; }
+  100% { filter: brightness(1.0); }
+}
+
+/* Combat Console logs */
+.battle-console-log {
+  background: #020204;
+  border: 1px solid var(--wow-border-dark);
+  border-radius: 4px;
+  padding: 15px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #fff;
+  height: 280px;
+  overflow-y: auto;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  box-shadow: inset 0 3px 10px rgba(0,0,0,0.9);
+}
+
+.battle-console-log::-webkit-scrollbar {
+  width: 8px;
+}
+.battle-console-log::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.5);
+}
+.battle-console-log::-webkit-scrollbar-thumb {
+  background: var(--wow-border-gold);
+  border-radius: 4px;
+}
+
+.battle-console-line {
+  animation: slideChatIn 0.15s ease-out forwards;
+}
+
+/* Active skills selection card highlights */
+.skill-slot-row {
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.skill-slot-row.active {
+  box-shadow: 0 0 8px rgba(241, 196, 15, 0.25);
+  animation: skillActivePulse 2s infinite ease-in-out;
+}
+@keyframes skillActivePulse {
+  0% { border-color: rgba(241, 196, 15, 0.3); }
+  50% { border-color: rgba(241, 196, 15, 0.9); }
+  100% { border-color: rgba(241, 196, 15, 0.3); }
+}
+
+.zone-category-header {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--wow-text-gold);
+  padding: 12px 8px 4px 8px;
+  border-bottom: 1px solid rgba(179, 143, 41, 0.2);
+  margin-bottom: 6px;
+  margin-top: 14px;
+  opacity: 0.9;
+}
+
+.zone-category-header:first-of-type {
+  margin-top: 0;
+}
+
+.dispatch-constraints-banner {
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+
