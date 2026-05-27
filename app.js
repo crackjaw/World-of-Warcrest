@@ -3613,6 +3613,95 @@ function getZoneAsset(name) {
     return { src, filter };
 }
 
+function getEnemyBackgroundSVG(enemy, zone) {
+    let primaryColor = "#1a1c23";
+    let secondaryColor = "#0f1015";
+    let accentColor = "rgba(255, 255, 255, 0.1)";
+    let particleColor = "rgba(255, 255, 255, 0.2)";
+    
+    const name = enemy.name.toLowerCase();
+    const icon = enemy.icon;
+    
+    let hash = 0;
+    for (let i = 0; i < enemy.id.length; i++) {
+        hash = enemy.id.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    if (name.includes("fire") || name.includes("molten") || name.includes("cinder") || icon === "🔥" || icon === "🌋") {
+        primaryColor = "#3d0c02";
+        secondaryColor = "#140300";
+        accentColor = "rgba(255, 80, 0, 0.2)";
+        particleColor = "rgba(255, 140, 0, 0.3)";
+    } else if (name.includes("frost") || name.includes("glacier") || name.includes("ice") || icon === "❄️" || icon === "🐆") {
+        primaryColor = "#08243c";
+        secondaryColor = "#020d18";
+        accentColor = "rgba(0, 180, 255, 0.15)";
+        particleColor = "rgba(130, 220, 255, 0.25)";
+    } else if (name.includes("shadow") || name.includes("death") || name.includes("grim") || name.includes("ghoul") || icon === "🧛" || icon === "🧟" || icon === "🧙‍♂️") {
+        primaryColor = "#2c0e3a";
+        secondaryColor = "#0f0216";
+        accentColor = "rgba(163, 53, 238, 0.15)";
+        particleColor = "rgba(200, 100, 255, 0.25)";
+    } else if (name.includes("jungle") || name.includes("tiger") || name.includes("pirate") || icon === "🐅" || icon === "🏴‍☠️") {
+        primaryColor = "#0a2f1d";
+        secondaryColor = "#02120a";
+        accentColor = "rgba(30, 255, 0, 0.12)";
+        particleColor = "rgba(100, 255, 100, 0.2)";
+    } else {
+        const hue = Math.abs(hash % 360);
+        primaryColor = `hsl(${hue}, 40%, 12%)`;
+        secondaryColor = `hsl(${hue}, 50%, 4%)`;
+        accentColor = `hsla(${hue}, 100%, 50%, 0.12)`;
+        particleColor = `hsla(${hue}, 100%, 70%, 0.2)`;
+    }
+
+    const rotation = Math.abs((hash >> 2) % 30) - 15;
+    const scale = 1.0 + (Math.abs((hash >> 4) % 4) * 0.1);
+    const bubbleCount = 4 + (Math.abs(hash % 5));
+    
+    let bubblesSvg = "";
+    for (let j = 0; j < bubbleCount; j++) {
+        const cx = 50 + Math.abs((hash >> (j * 2)) % 200);
+        const cy = 50 + Math.abs((hash >> (j * 3)) % 250);
+        const r = 20 + Math.abs((hash >> (j * 4)) % 60);
+        const op = 0.05 + (Math.abs((hash >> (j * 5)) % 10) * 0.01);
+        bubblesSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${particleColor}" opacity="${op}" />`;
+    }
+
+    const ringCount = 2 + (Math.abs(hash % 3));
+    let ringsSvg = "";
+    for (let k = 0; k < ringCount; k++) {
+        const rx = 180 + (k * 40);
+        const ry = 180 + (k * 40);
+        const op = 0.03 + (0.02 * k);
+        ringsSvg += `<ellipse cx="150" cy="180" rx="${rx}" ry="${ry}" fill="none" stroke="${accentColor}" stroke-width="2" stroke-dasharray="10 15" opacity="${op}" />`;
+    }
+
+    const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="300" height="360" viewBox="0 0 300 360">
+        <defs>
+            <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+                <stop offset="0%" stop-color="${primaryColor}" />
+                <stop offset="100%" stop-color="${secondaryColor}" />
+            </radialGradient>
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#bgGrad)" />
+        ${ringsSvg}
+        ${bubblesSvg}
+        <g transform="translate(150, 180) rotate(${rotation}) scale(${scale})">
+            <text x="0" y="45" font-size="120" text-anchor="middle" dominant-baseline="middle" opacity="0.08" fill="${accentColor}" filter="url(#glow)">${icon}</text>
+            <text x="0" y="45" font-size="110" text-anchor="middle" dominant-baseline="middle" opacity="0.14" fill="#ffffff">${icon}</text>
+        </g>
+    </svg>
+    `.trim();
+
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
 function selectZone(idx) {
     currentZoneIndex = idx;
     renderZoneSelector();
@@ -3673,8 +3762,8 @@ function renderEnemyList() {
         const isBoss = enemy.name.includes("[Boss]");
         const isElite = enemy.name.includes("[Elite]");
 
-        // Resolve portrait image if available for the specific enemy
-        let bgImageSrc = asset.src;
+        // Resolve unique background portrait SVG artwork for the specific enemy to avoid reused art
+        let bgImageSrc = getEnemyBackgroundSVG(enemy, zone);
         if (enemy.id === "ignis_firelord") {
             bgImageSrc = "assets/ignis_firelord.png";
         }
@@ -5469,6 +5558,7 @@ if (typeof module !== 'undefined' && module.exports) {
         openEquipModal,
         startQuest,
         getSlotIconPlaceholder,
-        getZoneAsset
+        getZoneAsset,
+        getEnemyBackgroundSVG
     };
 }

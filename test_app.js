@@ -1081,6 +1081,18 @@ test('Zone asset mappings and enemy card styled background covers resolve succes
         calderaContainer.children = [];
         app.selectZone(0);
     }
+
+    // 4. Verify distinct procedural background artwork generator handles multiple enemies
+    const zone0 = app.ZONE_DATABASE[0];
+    const kobold = zone0.enemies[0];
+    const spider = zone0.enemies[1];
+    
+    const koboldBg = app.getEnemyBackgroundSVG(kobold, zone0);
+    const spiderBg = app.getEnemyBackgroundSVG(spider, zone0);
+    
+    assert.ok(koboldBg.startsWith('data:image/svg+xml'), 'Kobold background should be an SVG data URI');
+    assert.ok(spiderBg.startsWith('data:image/svg+xml'), 'Spider background should be an SVG data URI');
+    assert.notStrictEqual(koboldBg, spiderBg, 'Every enemy must have a unique procedurally generated background artwork');
 });
 
 
