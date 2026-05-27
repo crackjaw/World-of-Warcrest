@@ -3804,11 +3804,11 @@ function getEnemyBackgroundSVG(enemy, zone) {
         </g>
         
         <!-- Monospace spaced parodied name engraving at bottom -->
-        <text x="150" y="328" font-family="'Courier New', Courier, monospace" font-size="11" font-weight="bold" fill="#ffffff" opacity="0.55" text-anchor="middle" letter-spacing="1.2">${spacedName}</text>
+        <text x="150" y="328" font-family="monospace" font-size="11" font-weight="bold" fill="#ffffff" opacity="0.55" text-anchor="middle" letter-spacing="1.2">${spacedName}</text>
     </svg>
     `.trim();
 
-    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+    return `data:image/svg+xml,${encodeURIComponent(svg).replace(/'/g, '%27')}`;
 }
 
 function getEnemyWatermarkHTML(enemy) {
@@ -3939,7 +3939,7 @@ function renderEnemyList() {
             baseIllustration = "assets/ignis_firelord.png";
         }
 
-        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.15) 0%, rgba(12, 13, 17, 0.45) 100%), url('${bgImageSrc}'), url('${baseIllustration}')`;
+        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.15) 0%, rgba(12, 13, 17, 0.45) 100%), url(${bgImageSrc}), url('${baseIllustration}')`;
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
         card.style.textShadow = "1px 1px 3px rgba(0, 0, 0, 0.9)";
