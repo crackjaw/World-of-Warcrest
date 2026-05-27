@@ -3865,8 +3865,8 @@ function renderEnemyList() {
         const isBoss = enemy.name.includes("[Boss]");
         const isElite = enemy.name.includes("[Elite]");
 
-        // Resolve unique background portrait SVG artwork for the specific enemy to avoid reused art
-        let bgImageSrc = getEnemyBackgroundSVG(enemy, zone);
+        // Resolve unique background portrait SVG artwork file for the specific enemy to avoid reused art
+        let bgImageSrc = `assets/portraits/${enemy.id}.svg`;
         if (enemy.id === "ignis_firelord") {
             bgImageSrc = "assets/ignis_firelord.png";
         }
