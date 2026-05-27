@@ -3673,9 +3673,10 @@ function renderEnemyList() {
         const isBoss = enemy.name.includes("[Boss]");
         const isElite = enemy.name.includes("[Elite]");
 
-        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.96) 0%, rgba(12, 13, 17, 0.88) 100%), url('${asset.src}')`;
+        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.5) 0%, rgba(12, 13, 17, 0.75) 100%), url('${asset.src}')`;
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
+        card.style.textShadow = "1px 1px 3px rgba(0, 0, 0, 0.9)";
 
         // Check if dungeon or raid enemy is unlocked
         const isDungeonOrRaid = zone.type === "dungeon" || zone.type === "raid";
