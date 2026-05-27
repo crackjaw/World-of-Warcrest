@@ -3544,6 +3544,75 @@ function renderZoneSelector() {
     });
 }
 
+function getZoneAsset(name) {
+    let src = "assets/elderwood_forest.png";
+    let filter = "none";
+
+    if (name === "Elderwood Forest") {
+        src = "assets/elderwood_forest.png";
+        filter = "none";
+    } else if (name === "The Grim Mines") {
+        src = "assets/elderwood_forest.png";
+        filter = "brightness(0.3) sepia(0.2) contrast(1.2)";
+    } else if (name === "Shadowstone Keep") {
+        src = "assets/rotting_reach.png";
+        filter = "brightness(0.3) hue-rotate(240deg) saturate(0.8)";
+    } else if (name === "Sunset Plains") {
+        src = "assets/elderwood_forest.png";
+        filter = "sepia(0.6) hue-rotate(335deg) saturate(1.3) contrast(1.1)";
+    } else if (name === "Wailing Fens") {
+        src = "assets/thorncrest_jungle.png";
+        filter = "brightness(0.4) hue-rotate(60deg) saturate(1.2)";
+    } else if (name === "Stockade Asylum") {
+        src = "assets/classes.png";
+        filter = "brightness(0.3) grayscale(0.5)";
+    } else if (name === "The Red Wastes") {
+        src = "assets/classes.png";
+        filter = "sepia(0.5) hue-rotate(35deg) saturate(1.2)";
+    } else if (name === "Scarlet Cathedral") {
+        src = "assets/classes.png";
+        filter = "sepia(0.3) saturate(1.8) hue-rotate(330deg) contrast(1.1)";
+    } else if (name === "Gnomish Depths") {
+        src = "assets/classes.png";
+        filter = "brightness(0.5) hue-rotate(180deg) saturate(1.5)";
+    } else if (name === "Thorncrest Jungle") {
+        src = "assets/thorncrest_jungle.png";
+        filter = "none";
+    } else if (name === "Troll-Sand Temple") {
+        src = "assets/thorncrest_jungle.png";
+        filter = "sepia(0.8) hue-rotate(5deg) saturate(1.2) brightness(0.6)";
+    } else if (name === "The Drowned Fane") {
+        src = "assets/rotting_reach.png";
+        filter = "hue-rotate(150deg) brightness(0.4) saturate(1.2)";
+    } else if (name === "The Rotting Reach") {
+        src = "assets/rotting_reach.png";
+        filter = "none";
+    } else if (name === "Glacier Basin") {
+        src = "assets/glacier_basin.png";
+        filter = "none";
+    } else if (name === "Darkstone Depths") {
+        src = "assets/obsidian_caldera.png";
+        filter = "brightness(0.3) contrast(1.3)";
+    } else if (name === "Feral Ruin") {
+        src = "assets/thorncrest_jungle.png";
+        filter = "brightness(0.3) hue-rotate(120deg)";
+    } else if (name === "The Ashfall Ruins") {
+        src = "assets/rotting_reach.png";
+        filter = "sepia(0.5) hue-rotate(340deg) brightness(0.4) contrast(1.2)";
+    } else if (name === "Obsidian Caldera [Raid]") {
+        src = "assets/obsidian_caldera.png";
+        filter = "none";
+    } else if (name === "Darkwing Summit [Raid]") {
+        src = "assets/obsidian_caldera.png";
+        filter = "hue-rotate(220deg) brightness(0.6) saturate(0.8)";
+    } else if (name === "Wyrmqueen's Den [Raid]") {
+        src = "assets/obsidian_caldera.png";
+        filter = "hue-rotate(340deg) brightness(0.5) contrast(1.2)";
+    }
+
+    return { src, filter };
+}
+
 function selectZone(idx) {
     currentZoneIndex = idx;
     renderZoneSelector();
@@ -3558,96 +3627,32 @@ function selectZone(idx) {
         const zone = ZONE_DATABASE[idx];
         bannerTitle.innerText = zone.name;
 
-        // Map zones by name to appropriate assets and filters to look extremely premium!
-        let src = "assets/elderwood_forest.png";
-        let filter = "none";
+        const asset = getZoneAsset(zone.name);
+
         let desc = `Levels ${zone.lvlRange} | Unexplored frontier in the World of Warcrest.`;
+        if (zone.name === "Elderwood Forest") desc = `Levels ${zone.lvlRange} | Quiet woodlands governed by Eldoria marshals.`;
+        else if (zone.name === "The Grim Mines") desc = `Levels ${zone.lvlRange} | Deep, dusty mine shafts holding outlaw conspirators.`;
+        else if (zone.name === "Shadowstone Keep") desc = `Levels ${zone.lvlRange} | Haunted fortress overrun by dark magic and shadows.`;
+        else if (zone.name === "Sunset Plains") desc = `Levels ${zone.lvlRange} | Dust-blown plains plagued by outlaw pillagers.`;
+        else if (zone.name === "Wailing Fens") desc = `Levels ${zone.lvlRange} | Ancient cavern system filled with raptors and slumbering druids.`;
+        else if (zone.name === "Stockade Asylum") desc = `Levels ${zone.lvlRange} | Heavily fortified prison experiencing a massive breakout.`;
+        else if (zone.name === "The Red Wastes") desc = `Levels ${zone.lvlRange} | Red wastes home to centaurs, raptors, and eternal general chat.`;
+        else if (zone.name === "Scarlet Cathedral") desc = `Levels ${zone.lvlRange} | Bastion of fanatical crusaders dedicated to cleansing the Blight.`;
+        else if (zone.name === "Gnomish Depths") desc = `Levels ${zone.lvlRange} | High-tech underground metropolis polluted by toxic waste.`;
+        else if (zone.name === "Thorncrest Jungle") desc = `Levels ${zone.lvlRange} | Dense, humid rain forest crawling with wild cats and corsairs.`;
+        else if (zone.name === "Troll-Sand Temple") desc = `Levels ${zone.lvlRange} | Sun-drenched ruins home to desert trolls and ancient sand magic.`;
+        else if (zone.name === "The Drowned Fane") desc = `Levels ${zone.lvlRange} | Sunken temple dedicated to the skeletal emerald dragon.`;
+        else if (zone.name === "The Rotting Reach") desc = `Levels ${zone.lvlRange} | Ruined lands decaying under an ancient and toxic blight.`;
+        else if (zone.name === "Glacier Basin") desc = `Levels ${zone.lvlRange} | Frozen alpine landscape home to sabertooths and crystal elements.`;
+        else if (zone.name === "Darkstone Depths") desc = `Levels ${zone.lvlRange} | Smoldering black stone city deep beneath the volcano.`;
+        else if (zone.name === "Feral Ruin") desc = `Levels ${zone.lvlRange} | Overgrown ruins concealing ancient highborne ghosts.`;
+        else if (zone.name === "The Ashfall Ruins") desc = `Levels ${zone.lvlRange} | Ash-covered ruin of a grand city, haunted by the undead.`;
+        else if (zone.name === "Obsidian Caldera [Raid]") desc = `Levels ${zone.lvlRange} [Raid] | Core of Obsidian Mountain, ruled by Ignis the Firelord.`;
+        else if (zone.name === "Darkwing Summit [Raid]") desc = `Levels ${zone.lvlRange} [Raid] | Laboratory at the peak of the mountain, ruled by the black dragon master.`;
+        else if (zone.name === "Wyrmqueen's Den [Raid]") desc = `Levels ${zone.lvlRange} [Raid] | The volcanic lair of the broodmother dragon.`;
 
-        const name = zone.name;
-        if (name === "Elderwood Forest") {
-            src = "assets/elderwood_forest.png";
-            filter = "none";
-            desc = `Levels ${zone.lvlRange} | Quiet woodlands governed by Eldoria marshals.`;
-        } else if (name === "The Grim Mines") {
-            src = "assets/elderwood_forest.png";
-            filter = "brightness(0.3) sepia(0.2) contrast(1.2)";
-            desc = `Levels ${zone.lvlRange} | Deep, dusty mine shafts holding outlaw conspirators.`;
-        } else if (name === "Shadowstone Keep") {
-            src = "assets/rotting_reach.png";
-            filter = "brightness(0.3) hue-rotate(240deg) saturate(0.8)";
-            desc = `Levels ${zone.lvlRange} | Haunted fortress overrun by dark magic and shadows.`;
-        } else if (name === "Sunset Plains") {
-            src = "assets/elderwood_forest.png";
-            filter = "sepia(0.6) hue-rotate(335deg) saturate(1.3) contrast(1.1)";
-            desc = `Levels ${zone.lvlRange} | Dust-blown plains plagued by outlaw pillagers.`;
-        } else if (name === "Wailing Fens") {
-            src = "assets/thorncrest_jungle.png";
-            filter = "brightness(0.4) hue-rotate(60deg) saturate(1.2)";
-            desc = `Levels ${zone.lvlRange} | Ancient cavern system filled with raptors and slumbering druids.`;
-        } else if (name === "Stockade Asylum") {
-            src = "assets/classes.png";
-            filter = "brightness(0.3) grayscale(0.5)";
-            desc = `Levels ${zone.lvlRange} | Heavily fortified prison experiencing a massive breakout.`;
-        } else if (name === "The Red Wastes") {
-            src = "assets/classes.png";
-            filter = "sepia(0.5) hue-rotate(35deg) saturate(1.2)";
-            desc = `Levels ${zone.lvlRange} | Red wastes home to centaurs, raptors, and eternal general chat.`;
-        } else if (name === "Scarlet Cathedral") {
-            src = "assets/classes.png";
-            filter = "sepia(0.3) saturate(1.8) hue-rotate(330deg) contrast(1.1)";
-            desc = `Levels ${zone.lvlRange} | Bastion of fanatical crusaders dedicated to cleansing the Blight.`;
-        } else if (name === "Gnomish Depths") {
-            src = "assets/classes.png";
-            filter = "brightness(0.5) hue-rotate(180deg) saturate(1.5)";
-            desc = `Levels ${zone.lvlRange} | High-tech underground metropolis polluted by toxic waste.`;
-        } else if (name === "Thorncrest Jungle") {
-            src = "assets/thorncrest_jungle.png";
-            filter = "none";
-            desc = `Levels ${zone.lvlRange} | Dense, humid rain forest crawling with wild cats and corsairs.`;
-        } else if (name === "Troll-Sand Temple") {
-            src = "assets/thorncrest_jungle.png";
-            filter = "sepia(0.8) hue-rotate(5deg) saturate(1.2) brightness(0.6)";
-            desc = `Levels ${zone.lvlRange} | Sun-drenched ruins home to desert trolls and ancient sand magic.`;
-        } else if (name === "The Drowned Fane") {
-            src = "assets/rotting_reach.png";
-            filter = "hue-rotate(150deg) brightness(0.4) saturate(1.2)";
-            desc = `Levels ${zone.lvlRange} | Sunken temple dedicated to the skeletal emerald dragon.`;
-        } else if (name === "The Rotting Reach") {
-            src = "assets/rotting_reach.png";
-            filter = "none";
-            desc = `Levels ${zone.lvlRange} | Ruined lands decaying under an ancient and toxic blight.`;
-        } else if (name === "Glacier Basin") {
-            src = "assets/glacier_basin.png";
-            filter = "none";
-            desc = `Levels ${zone.lvlRange} | Frozen alpine landscape home to sabertooths and crystal elements.`;
-        } else if (name === "Darkstone Depths") {
-            src = "assets/obsidian_caldera.png";
-            filter = "brightness(0.3) contrast(1.3)";
-            desc = `Levels ${zone.lvlRange} | Smoldering black stone city deep beneath the volcano.`;
-        } else if (name === "Feral Ruin") {
-            src = "assets/thorncrest_jungle.png";
-            filter = "brightness(0.3) hue-rotate(120deg)";
-            desc = `Levels ${zone.lvlRange} | Overgrown ruins concealing ancient highborne ghosts.`;
-        } else if (name === "The Ashfall Ruins") {
-            src = "assets/rotting_reach.png";
-            filter = "sepia(0.5) hue-rotate(340deg) brightness(0.4) contrast(1.2)";
-            desc = `Levels ${zone.lvlRange} | Ash-covered ruin of a grand city, haunted by the undead.`;
-        } else if (name === "Obsidian Caldera [Raid]") {
-            src = "assets/obsidian_caldera.png";
-            filter = "none";
-            desc = `Levels ${zone.lvlRange} [Raid] | Core of Obsidian Mountain, ruled by Ignis the Firelord.`;
-        } else if (name === "Darkwing Summit [Raid]") {
-            src = "assets/obsidian_caldera.png";
-            filter = "hue-rotate(220deg) brightness(0.6) saturate(0.8)";
-            desc = `Levels ${zone.lvlRange} [Raid] | Laboratory at the peak of the mountain, ruled by the black dragon master.`;
-        } else if (name === "Wyrmqueen's Den [Raid]") {
-            src = "assets/obsidian_caldera.png";
-            filter = "hue-rotate(340deg) brightness(0.5) contrast(1.2)";
-            desc = `Levels ${zone.lvlRange} [Raid] | The volcanic lair of the broodmother dragon.`;
-        }
-
-        bannerImg.src = src;
-        bannerImg.style.filter = filter;
+        bannerImg.src = asset.src;
+        bannerImg.style.filter = asset.filter;
         bannerDesc.innerText = desc;
     }
 }
@@ -3663,6 +3668,14 @@ function renderEnemyList() {
     zone.enemies.forEach(enemy => {
         const card = document.createElement("div");
         card.className = "enemy-card";
+
+        const asset = getZoneAsset(zone.name);
+        const isBoss = enemy.name.includes("[Boss]");
+        const isElite = enemy.name.includes("[Elite]");
+
+        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.96) 0%, rgba(12, 13, 17, 0.88) 100%), url('${asset.src}')`;
+        card.style.backgroundSize = "cover";
+        card.style.backgroundPosition = "center";
 
         // Check if dungeon or raid enemy is unlocked
         const isDungeonOrRaid = zone.type === "dungeon" || zone.type === "raid";
@@ -3682,6 +3695,15 @@ function renderEnemyList() {
             card.style.filter = "grayscale(80%)";
             card.style.border = "1px dashed rgba(255, 0, 0, 0.3)";
             card.style.position = "relative";
+        } else {
+            let borderStyle = isBoss 
+                ? "1px solid var(--wow-text-gold)" 
+                : (isElite ? "1px solid #1eff00" : "1px solid var(--wow-border-dark)");
+            let shadowStyle = isBoss 
+                ? "inset 0 0 12px rgba(255, 209, 0, 0.15), 0 4px 10px rgba(0,0,0,0.5)" 
+                : "0 4px 10px rgba(0,0,0,0.3)";
+            card.style.border = borderStyle;
+            card.style.boxShadow = shadowStyle;
         }
 
         let dropsHtml = "";
@@ -5428,6 +5450,7 @@ if (typeof module !== 'undefined' && module.exports) {
         openEquipSlotModal,
         openEquipModal,
         startQuest,
-        getSlotIconPlaceholder
+        getSlotIconPlaceholder,
+        getZoneAsset
     };
 }

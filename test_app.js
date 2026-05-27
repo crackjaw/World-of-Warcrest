@@ -1034,6 +1034,27 @@ test('Victory and defeat tracking increments kills and deaths correctly', () => 
     assert.strictEqual(app.gameState.enemyStats[mockEnemyId].deaths, 1, 'Defeat should increment deaths to 1');
 });
 
+test('Zone asset mappings and enemy card styled background covers resolve successfully', () => {
+    // 1. Assert getZoneAsset successfully maps every zone name in ZONE_DATABASE to a valid .png source path
+    app.ZONE_DATABASE.forEach(zone => {
+        const asset = app.getZoneAsset(zone.name);
+        assert.ok(asset, `Asset should resolve for zone: ${zone.name}`);
+        assert.ok(asset.src.endsWith('.png'), `Asset source for "${zone.name}" should be a PNG file path`);
+        assert.ok(asset.filter, `Asset filter should be defined for zone: ${zone.name}`);
+    });
+
+    // 2. Mock and execute renderEnemyList to verify card styles are configured correctly
+    app.renderEnemyList();
+
+    const container = document.getElementById('enemy-list-container');
+    assert.ok(container.children.length > 0, 'Enemy list container should contain rendered cards');
+
+    const firstCard = container.children[0];
+    assert.ok(firstCard.style.backgroundImage.includes('url('), 'Card style should include background image cover');
+    assert.strictEqual(firstCard.style.backgroundSize, 'cover', 'Card background size should be cover');
+});
+
+
 
 
 
