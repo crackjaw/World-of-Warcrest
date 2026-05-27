@@ -979,6 +979,62 @@ test('Enriched dungeons and raids unique equipment drops count matches target co
     });
 });
 
+test('Victory and defeat tracking increments kills and deaths correctly', () => {
+    // 1. Reset state
+    app.gameState.activeQuests = [];
+    app.gameState.defeatedEnemies = [];
+    app.gameState.enemyStats = {};
+
+    const mockEnemyId = 'test_mob_tracking';
+
+    // 2. Simulate quickCollectQuestRewards victory
+    const mockReplayWon = {
+        questId: 'quest_test_won',
+        enemyId: mockEnemyId,
+        enemyName: 'Test Target Mob',
+        won: true,
+        finalHeroStates: {},
+        copperEarned: 10,
+        lootDropped: []
+    };
+
+    app.gameState.activeQuests.push({
+        id: 'quest_test_won',
+        heroIds: [],
+        enemyId: mockEnemyId,
+        zoneId: 0,
+        replay: mockReplayWon
+    });
+
+    app.quickCollectQuestRewards('quest_test_won');
+    assert.strictEqual(app.gameState.enemyStats[mockEnemyId].kills, 1, 'Victory should increment kills to 1');
+    assert.strictEqual(app.gameState.enemyStats[mockEnemyId].deaths, 0, 'Victory should leave deaths at 0');
+
+    // 3. Simulate quickCollectQuestRewards defeat
+    const mockReplayLost = {
+        questId: 'quest_test_lost',
+        enemyId: mockEnemyId,
+        enemyName: 'Test Target Mob',
+        won: false,
+        finalHeroStates: {},
+        copperEarned: 0,
+        lootDropped: []
+    };
+
+    app.gameState.activeQuests.push({
+        id: 'quest_test_lost',
+        heroIds: [],
+        enemyId: mockEnemyId,
+        zoneId: 0,
+        replay: mockReplayLost
+    });
+
+    app.quickCollectQuestRewards('quest_test_lost');
+    assert.strictEqual(app.gameState.enemyStats[mockEnemyId].kills, 1, 'Defeat should leave kills at 1');
+    assert.strictEqual(app.gameState.enemyStats[mockEnemyId].deaths, 1, 'Defeat should increment deaths to 1');
+});
+
+
 
 
 

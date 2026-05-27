@@ -734,6 +734,16 @@ main {
   margin-right: 4px;
 }
 
+.enemy-tracking {
+  font-size: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+  margin-top: 5px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
 /* --- CRAFTING TAB --- */
 .crafting-layout {
   display: grid;

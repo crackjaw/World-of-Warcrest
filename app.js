@@ -2082,7 +2082,8 @@ let gameState = {
         maxHeroes: 40,
         maxBagSlots: 30
     },
-    defeatedEnemies: []
+    defeatedEnemies: [],
+    enemyStats: {}
 };
 
 // UI Tab Navigation
@@ -2234,6 +2235,7 @@ function loadGame() {
             }
             if (parsed.lastDispatch) gameState.lastDispatch = parsed.lastDispatch;
             gameState.defeatedEnemies = parsed.defeatedEnemies || [];
+            gameState.enemyStats = parsed.enemyStats || {};
         } catch (e) {
             console.error("Save load corrupt. Initializing clean state.", e);
         }
@@ -3707,6 +3709,7 @@ function renderEnemyList() {
                 🔒 Locked (Requires: ${prevEnemy ? prevEnemy.name : "Previous"})
             </button>
         `;
+        const stats = (gameState.enemyStats && gameState.enemyStats[enemy.id]) || { kills: 0, deaths: 0 };
 
         card.innerHTML = `
             <div class="enemy-card-header">
@@ -3719,6 +3722,12 @@ function renderEnemyList() {
                 <div>Damage: <strong>${enemy.atk} Atk</strong></div>
                 <div>Rewards: <strong>+${enemy.xp} XP</strong>, <strong>${parseCoins(enemy.copper)}</strong></div>
                 <div>Duration: <strong>${enemy.duration}s</strong></div>
+            </div>
+
+            <div class="enemy-tracking">
+                <span style="color:var(--wow-text-gold); font-weight:bold;">Record:</span>
+                <span style="color:#1eff00; margin-left:4px;">🏆 ${stats.kills} Wins</span>
+                <span style="color:#ff3333; margin-left:4px;">💀 ${stats.deaths} Losses</span>
             </div>
 
             <div class="enemy-drops" style="font-size: 0.75rem;">
@@ -5204,6 +5213,12 @@ function closeBattleReport() {
             if (replay.enemyId && !gameState.defeatedEnemies.includes(replay.enemyId)) {
                 gameState.defeatedEnemies.push(replay.enemyId);
             }
+            if (replay.enemyId) {
+                if (!gameState.enemyStats[replay.enemyId]) {
+                    gameState.enemyStats[replay.enemyId] = { kills: 0, deaths: 0 };
+                }
+                gameState.enemyStats[replay.enemyId].kills++;
+            }
 
             if (replay.copperEarned > 0) {
                 addGold(replay.copperEarned);
@@ -5218,6 +5233,13 @@ function closeBattleReport() {
                         pushBarrensChat("Guild Coordinator", `Acquired loot: [${item.name}] x${drop.quantity}`);
                     }
                 });
+            }
+        } else {
+            if (replay.enemyId) {
+                if (!gameState.enemyStats[replay.enemyId]) {
+                    gameState.enemyStats[replay.enemyId] = { kills: 0, deaths: 0 };
+                }
+                gameState.enemyStats[replay.enemyId].deaths++;
             }
         }
 
@@ -5274,6 +5296,12 @@ function quickCollectQuestRewards(questId) {
         if (replay.enemyId && !gameState.defeatedEnemies.includes(replay.enemyId)) {
             gameState.defeatedEnemies.push(replay.enemyId);
         }
+        if (replay.enemyId) {
+            if (!gameState.enemyStats[replay.enemyId]) {
+                gameState.enemyStats[replay.enemyId] = { kills: 0, deaths: 0 };
+            }
+            gameState.enemyStats[replay.enemyId].kills++;
+        }
 
         pushBarrensChat("Guild Coordinator", `🏆 VICTORY over ${replay.enemyName}!`);
         if (replay.copperEarned > 0) {
@@ -5291,6 +5319,12 @@ function quickCollectQuestRewards(questId) {
             });
         }
     } else {
+        if (replay.enemyId) {
+            if (!gameState.enemyStats[replay.enemyId]) {
+                gameState.enemyStats[replay.enemyId] = { kills: 0, deaths: 0 };
+            }
+            gameState.enemyStats[replay.enemyId].deaths++;
+        }
         pushBarrensChat("Guild Coordinator", `💀 DEFEAT! Group wiped against ${replay.enemyName}.`);
     }
 
