@@ -3614,11 +3614,11 @@ function getZoneAsset(name) {
 }
 
 function getEnemyBackgroundSVG(enemy, zone) {
-    let primaryColor = "#15161d";
-    let secondaryColor = "#0a0b0e";
-    let accentColor = "rgba(255, 255, 255, 0.08)";
-    let particleColor = "rgba(255, 255, 255, 0.15)";
-    let glowColor = "rgba(255, 255, 255, 0.2)";
+    let primaryColor = "#1a1c23";
+    let secondaryColor = "#0f1015";
+    let accentColor = "rgba(255, 255, 255, 0.15)";
+    let particleColor = "rgba(255, 255, 255, 0.22)";
+    let glowColor = "rgba(255, 255, 255, 0.4)";
     
     const name = enemy.name.toLowerCase();
     const icon = enemy.icon;
@@ -3632,18 +3632,18 @@ function getEnemyBackgroundSVG(enemy, zone) {
     let path = "";
     
     if (name.includes("fire") || name.includes("molten") || name.includes("cinder") || icon === "🔥" || icon === "🌋") {
-        primaryColor = "#2c0902";
-        secondaryColor = "#0f0200";
-        accentColor = "rgba(255, 68, 0, 0.06)";
-        particleColor = "rgba(255, 120, 0, 0.12)";
-        glowColor = "rgba(255, 80, 0, 0.3)";
+        primaryColor = "#4c1205";
+        secondaryColor = "#1a0400";
+        accentColor = "rgba(255, 68, 0, 0.15)";
+        particleColor = "rgba(255, 120, 0, 0.25)";
+        glowColor = "rgba(255, 80, 0, 0.55)";
         path = `M 0 -60 L 50 25 L -50 25 Z M 0 -42 L 35 17 L -35 17 Z M 0 -25 L 20 8 L -20 8 Z`;
     } else if (name.includes("frost") || name.includes("glacier") || name.includes("ice") || icon === "❄️" || icon === "🐆") {
-        primaryColor = "#061e33";
-        secondaryColor = "#010a12";
-        accentColor = "rgba(0, 150, 255, 0.08)";
-        particleColor = "rgba(100, 200, 255, 0.15)";
-        glowColor = "rgba(0, 180, 255, 0.35)";
+        primaryColor = "#0c3559";
+        secondaryColor = "#03172b";
+        accentColor = "rgba(0, 150, 255, 0.18)";
+        particleColor = "rgba(100, 200, 255, 0.28)";
+        glowColor = "rgba(0, 180, 255, 0.65)";
         // Symmetrical ice star compass
         for (let a = 0; a < 6; a++) {
             const angle = (a * Math.PI) / 3;
@@ -3659,27 +3659,27 @@ function getEnemyBackgroundSVG(enemy, zone) {
             path += `M ${cx1} ${cy1} L ${cx2} ${cy2} `;
         }
     } else if (name.includes("shadow") || name.includes("death") || name.includes("grim") || name.includes("ghoul") || icon === "🧛" || icon === "🧟" || icon === "🧙‍♂️") {
-        primaryColor = "#220a2e";
-        secondaryColor = "#0b0110";
-        accentColor = "rgba(163, 53, 238, 0.08)";
-        particleColor = "rgba(180, 80, 255, 0.15)";
-        glowColor = "rgba(163, 53, 238, 0.3)";
+        primaryColor = "#3d134f";
+        secondaryColor = "#150221";
+        accentColor = "rgba(163, 53, 238, 0.16)";
+        particleColor = "rgba(180, 80, 255, 0.25)";
+        glowColor = "rgba(163, 53, 238, 0.55)";
         path = `M -45 0 A 45 45 0 1 0 45 0 A 35 35 0 1 1 -45 0 M 0 -45 L 0 45 M -45 0 L 45 0`;
     } else if (name.includes("jungle") || name.includes("tiger") || name.includes("pirate") || icon === "🐅" || icon === "🏴‍☠️") {
-        primaryColor = "#082618";
-        secondaryColor = "#010e08";
-        accentColor = "rgba(30, 255, 0, 0.06)";
-        particleColor = "rgba(80, 255, 80, 0.12)";
-        glowColor = "rgba(30, 255, 0, 0.25)";
+        primaryColor = "#114529";
+        secondaryColor = "#041b0f";
+        accentColor = "rgba(30, 255, 0, 0.15)";
+        particleColor = "rgba(80, 255, 80, 0.25)";
+        glowColor = "rgba(30, 255, 0, 0.5)";
         path = `M 0 -60 C 30 -30 38 8 0 50 C -30 8 -28 -30 0 -60 M 0 -60 L 0 50 M -25 -8 Q 0 -15 25 -8`;
     } else {
         // Standard shield runic compass
         const hue = Math.abs(hash % 360);
-        primaryColor = `hsl(${hue}, 30%, 8%)`;
-        secondaryColor = `hsl(${hue}, 40%, 3%)`;
-        accentColor = `hsla(${hue}, 100%, 50%, 0.06)`;
-        particleColor = `hsla(${hue}, 100%, 70%, 0.12)`;
-        glowColor = `hsla(${hue}, 100%, 70%, 0.25)`;
+        primaryColor = `hsl(${hue}, 35%, 15%)`;
+        secondaryColor = `hsl(${hue}, 45%, 6%)`;
+        accentColor = `hsla(${hue}, 100%, 50%, 0.14)`;
+        particleColor = `hsla(${hue}, 100%, 70%, 0.22)`;
+        glowColor = `hsla(${hue}, 100%, 70%, 0.55)`;
         path = `M 0 -55 L 38 -34 L 38 17 C 38 46 0 63 0 63 C 0 63 -38 46 -38 17 L -38 -34 Z M -38 -34 L 38 17 M 38 -34 L -38 17`;
     }
 
@@ -3692,7 +3692,7 @@ function getEnemyBackgroundSVG(enemy, zone) {
         const cx = 50 + Math.abs((hash >> (j * 2)) % 200);
         const cy = 50 + Math.abs((hash >> (j * 3)) % 250);
         const r = 20 + Math.abs((hash >> (j * 4)) % 60);
-        const op = 0.03 + (Math.abs((hash >> (j * 5)) % 10) * 0.01);
+        const op = 0.08 + (Math.abs((hash >> (j * 5)) % 10) * 0.02);
         bubblesSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${particleColor}" opacity="${op}" />`;
     }
 
@@ -3701,8 +3701,8 @@ function getEnemyBackgroundSVG(enemy, zone) {
     for (let k = 0; k < ringCount; k++) {
         const rx = 180 + (k * 40);
         const ry = 180 + (k * 40);
-        const op = 0.02 + (0.015 * k);
-        ringsSvg += `<ellipse cx="150" cy="180" rx="${rx}" ry="${ry}" fill="none" stroke="${accentColor}" stroke-width="1.5" stroke-dasharray="10 15" opacity="${op}" />`;
+        const op = 0.06 + (0.04 * k);
+        ringsSvg += `<ellipse cx="150" cy="180" rx="${rx}" ry="${ry}" fill="none" stroke="${accentColor}" stroke-width="1.8" stroke-dasharray="10 15" opacity="${op}" />`;
     }
 
     const svg = `
@@ -3728,15 +3728,15 @@ function getEnemyBackgroundSVG(enemy, zone) {
         ${bubblesSvg}
         
         <!-- Outer Sigil Ring -->
-        <circle cx="150" cy="180" r="100" fill="none" stroke="${glowColor}" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.3" />
-        <circle cx="150" cy="180" r="88" fill="none" stroke="${glowColor}" stroke-width="1" opacity="0.2" />
+        <circle cx="150" cy="180" r="100" fill="none" stroke="${glowColor}" stroke-width="1.8" stroke-dasharray="4 6" opacity="0.55" />
+        <circle cx="150" cy="180" r="88" fill="none" stroke="${glowColor}" stroke-width="1.2" opacity="0.38" />
 
         <!-- Centered Glowing Large Custom Runic Fantasy Seal -->
         <g transform="translate(150, 180) rotate(${rotation}) scale(${scale})">
             <!-- Sigil Glow Shadow -->
-            <path d="${path}" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" opacity="0.1" />
+            <path d="${path}" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" opacity="0.22" />
             <!-- Main Sigil Vector Path -->
-            <path d="${path}" fill="none" stroke="${glowColor}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.25" />
+            <path d="${path}" fill="none" stroke="${glowColor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.55" />
         </g>
     </svg>
     `.trim();
@@ -3758,9 +3758,9 @@ function getEnemyWatermarkHTML(enemy) {
     
     if (name.includes("fire") || name.includes("molten") || name.includes("cinder") || icon === "🔥" || icon === "🌋") {
         path = `M 0 -60 L 50 25 L -50 25 Z M 0 -42 L 35 17 L -35 17 Z`;
-        glowColor = "rgba(255, 80, 0, 0.4)";
+        glowColor = "rgba(255, 80, 0, 0.45)";
     } else if (name.includes("frost") || name.includes("glacier") || name.includes("ice") || icon === "❄️" || icon === "🐆") {
-        glowColor = "rgba(0, 180, 255, 0.45)";
+        glowColor = "rgba(0, 180, 255, 0.5)";
         for (let a = 0; a < 6; a++) {
             const angle = (a * Math.PI) / 3;
             const x1 = Math.round(Math.cos(angle) * 18);
@@ -3771,18 +3771,18 @@ function getEnemyWatermarkHTML(enemy) {
         }
     } else if (name.includes("shadow") || name.includes("death") || name.includes("grim") || name.includes("ghoul") || icon === "🧛" || icon === "🧟" || icon === "🧙‍♂️") {
         path = `M -45 0 A 45 45 0 1 0 45 0 A 35 35 0 1 1 -45 0 M 0 -45 L 0 45`;
-        glowColor = "rgba(163, 53, 238, 0.4)";
+        glowColor = "rgba(163, 53, 238, 0.45)";
     } else if (name.includes("jungle") || name.includes("tiger") || name.includes("pirate") || icon === "🐅" || icon === "🏴‍☠️") {
         path = `M 0 -60 C 30 -30 38 8 0 50 C -30 8 -28 -30 0 -60 M -25 -8 Q 0 -15 25 -8`;
-        glowColor = "rgba(30, 255, 0, 0.35)";
+        glowColor = "rgba(30, 255, 0, 0.4)";
     } else {
         path = `M 0 -55 L 38 -34 L 38 17 C 38 46 0 63 0 63 C 0 63 -38 46 -38 17 L -38 -34 Z`;
         const hue = Math.abs(hash % 360);
-        glowColor = `hsla(${hue}, 100%, 70%, 0.35)`;
+        glowColor = `hsla(${hue}, 100%, 70%, 0.4)`;
     }
 
     return `
-        <div class="enemy-portrait-watermark" style="position: absolute; right: 10px; bottom: 10px; width: 110px; height: 110px; opacity: 0.28; pointer-events: none; user-select: none; z-index: 1;">
+        <div class="enemy-portrait-watermark" style="position: absolute; right: 10px; bottom: 10px; width: 110px; height: 110px; opacity: 0.55; pointer-events: none; user-select: none; z-index: 1;">
             <svg width="100%" height="100%" viewBox="-80 -80 160 160" xmlns="http://www.w3.org/2000/svg" style="display: block;">
                 <defs>
                     <filter id="badgeGlow">
@@ -3790,16 +3790,16 @@ function getEnemyWatermarkHTML(enemy) {
                         <feComposite in="SourceGraphic" in2="blur" operator="over" />
                     </filter>
                 </defs>
-                <circle cx="0" cy="0" r="70" fill="none" stroke="${glowColor}" stroke-width="1.2" stroke-dasharray="3 5" opacity="0.3" />
-                <circle cx="0" cy="0" r="62" fill="none" stroke="${glowColor}" stroke-width="0.8" opacity="0.2" />
+                <circle cx="0" cy="0" r="70" fill="none" stroke="${glowColor}" stroke-width="1.5" stroke-dasharray="3 5" opacity="0.55" />
+                <circle cx="0" cy="0" r="62" fill="none" stroke="${glowColor}" stroke-width="1" opacity="0.38" />
                 
                 <!-- Glow sigil -->
-                <path d="${path}" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#badgeGlow)" opacity="0.12" />
+                <path d="${path}" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#badgeGlow)" opacity="0.25" />
                 <!-- Front sigil -->
-                <path d="${path}" fill="none" stroke="${glowColor}" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" />
+                <path d="${path}" fill="none" stroke="${glowColor}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.75" />
                 
                 <!-- Tiny Element Icon Indicator at center -->
-                <text x="0" y="8" font-size="24" text-anchor="middle" dominant-baseline="middle" opacity="0.2" fill="#ffffff">${icon}</text>
+                <text x="0" y="8" font-size="24" text-anchor="middle" dominant-baseline="middle" opacity="0.45" fill="#ffffff">${icon}</text>
             </svg>
         </div>
     `.trim();
