@@ -3614,10 +3614,11 @@ function getZoneAsset(name) {
 }
 
 function getEnemyBackgroundSVG(enemy, zone) {
-    let primaryColor = "#1a1c23";
-    let secondaryColor = "#0f1015";
-    let accentColor = "rgba(255, 255, 255, 0.1)";
-    let particleColor = "rgba(255, 255, 255, 0.2)";
+    let primaryColor = "#15161d";
+    let secondaryColor = "#0a0b0e";
+    let accentColor = "rgba(255, 255, 255, 0.08)";
+    let particleColor = "rgba(255, 255, 255, 0.15)";
+    let glowColor = "rgba(255, 255, 255, 0.2)";
     
     const name = enemy.name.toLowerCase();
     const icon = enemy.icon;
@@ -3627,36 +3628,63 @@ function getEnemyBackgroundSVG(enemy, zone) {
         hash = enemy.id.charCodeAt(i) + ((hash << 5) - hash);
     }
     
+    // Choose active path and color properties based on element/theme
+    let path = "";
+    
     if (name.includes("fire") || name.includes("molten") || name.includes("cinder") || icon === "🔥" || icon === "🌋") {
-        primaryColor = "#3d0c02";
-        secondaryColor = "#140300";
-        accentColor = "rgba(255, 80, 0, 0.2)";
-        particleColor = "rgba(255, 140, 0, 0.3)";
+        primaryColor = "#2c0902";
+        secondaryColor = "#0f0200";
+        accentColor = "rgba(255, 68, 0, 0.06)";
+        particleColor = "rgba(255, 120, 0, 0.12)";
+        glowColor = "rgba(255, 80, 0, 0.3)";
+        path = `M 0 -60 L 50 25 L -50 25 Z M 0 -42 L 35 17 L -35 17 Z M 0 -25 L 20 8 L -20 8 Z`;
     } else if (name.includes("frost") || name.includes("glacier") || name.includes("ice") || icon === "❄️" || icon === "🐆") {
-        primaryColor = "#08243c";
-        secondaryColor = "#020d18";
-        accentColor = "rgba(0, 180, 255, 0.15)";
-        particleColor = "rgba(130, 220, 255, 0.25)";
+        primaryColor = "#061e33";
+        secondaryColor = "#010a12";
+        accentColor = "rgba(0, 150, 255, 0.08)";
+        particleColor = "rgba(100, 200, 255, 0.15)";
+        glowColor = "rgba(0, 180, 255, 0.35)";
+        // Symmetrical ice star compass
+        for (let a = 0; a < 6; a++) {
+            const angle = (a * Math.PI) / 3;
+            const x1 = Math.round(Math.cos(angle) * 18);
+            const y1 = Math.round(Math.sin(angle) * 18);
+            const x2 = Math.round(Math.cos(angle) * 55);
+            const y2 = Math.round(Math.sin(angle) * 55);
+            path += `M 0 0 L ${x1} ${y1} M ${x1} ${y1} L ${x2} ${y2} `;
+            const cx1 = Math.round(Math.cos(angle) * 38 + Math.cos(angle + Math.PI/2) * 10);
+            const cy1 = Math.round(Math.sin(angle) * 38 + Math.sin(angle + Math.PI/2) * 10);
+            const cx2 = Math.round(Math.cos(angle) * 38 - Math.cos(angle + Math.PI/2) * 10);
+            const cy2 = Math.round(Math.sin(angle) * 38 - Math.sin(angle + Math.PI/2) * 10);
+            path += `M ${cx1} ${cy1} L ${cx2} ${cy2} `;
+        }
     } else if (name.includes("shadow") || name.includes("death") || name.includes("grim") || name.includes("ghoul") || icon === "🧛" || icon === "🧟" || icon === "🧙‍♂️") {
-        primaryColor = "#2c0e3a";
-        secondaryColor = "#0f0216";
-        accentColor = "rgba(163, 53, 238, 0.15)";
-        particleColor = "rgba(200, 100, 255, 0.25)";
+        primaryColor = "#220a2e";
+        secondaryColor = "#0b0110";
+        accentColor = "rgba(163, 53, 238, 0.08)";
+        particleColor = "rgba(180, 80, 255, 0.15)";
+        glowColor = "rgba(163, 53, 238, 0.3)";
+        path = `M -45 0 A 45 45 0 1 0 45 0 A 35 35 0 1 1 -45 0 M 0 -45 L 0 45 M -45 0 L 45 0`;
     } else if (name.includes("jungle") || name.includes("tiger") || name.includes("pirate") || icon === "🐅" || icon === "🏴‍☠️") {
-        primaryColor = "#0a2f1d";
-        secondaryColor = "#02120a";
-        accentColor = "rgba(30, 255, 0, 0.12)";
-        particleColor = "rgba(100, 255, 100, 0.2)";
+        primaryColor = "#082618";
+        secondaryColor = "#010e08";
+        accentColor = "rgba(30, 255, 0, 0.06)";
+        particleColor = "rgba(80, 255, 80, 0.12)";
+        glowColor = "rgba(30, 255, 0, 0.25)";
+        path = `M 0 -60 C 30 -30 38 8 0 50 C -30 8 -28 -30 0 -60 M 0 -60 L 0 50 M -25 -8 Q 0 -15 25 -8`;
     } else {
+        // Standard shield runic compass
         const hue = Math.abs(hash % 360);
-        primaryColor = `hsl(${hue}, 40%, 12%)`;
-        secondaryColor = `hsl(${hue}, 50%, 4%)`;
-        accentColor = `hsla(${hue}, 100%, 50%, 0.12)`;
-        particleColor = `hsla(${hue}, 100%, 70%, 0.2)`;
+        primaryColor = `hsl(${hue}, 30%, 8%)`;
+        secondaryColor = `hsl(${hue}, 40%, 3%)`;
+        accentColor = `hsla(${hue}, 100%, 50%, 0.06)`;
+        particleColor = `hsla(${hue}, 100%, 70%, 0.12)`;
+        glowColor = `hsla(${hue}, 100%, 70%, 0.25)`;
+        path = `M 0 -55 L 38 -34 L 38 17 C 38 46 0 63 0 63 C 0 63 -38 46 -38 17 L -38 -34 Z M -38 -34 L 38 17 M 38 -34 L -38 17`;
     }
 
     const rotation = Math.abs((hash >> 2) % 30) - 15;
-    const scale = 1.0 + (Math.abs((hash >> 4) % 4) * 0.1);
+    const scale = 1.2 + (Math.abs((hash >> 4) % 4) * 0.1);
     const bubbleCount = 4 + (Math.abs(hash % 5));
     
     let bubblesSvg = "";
@@ -3664,7 +3692,7 @@ function getEnemyBackgroundSVG(enemy, zone) {
         const cx = 50 + Math.abs((hash >> (j * 2)) % 200);
         const cy = 50 + Math.abs((hash >> (j * 3)) % 250);
         const r = 20 + Math.abs((hash >> (j * 4)) % 60);
-        const op = 0.05 + (Math.abs((hash >> (j * 5)) % 10) * 0.01);
+        const op = 0.03 + (Math.abs((hash >> (j * 5)) % 10) * 0.01);
         bubblesSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${particleColor}" opacity="${op}" />`;
     }
 
@@ -3673,8 +3701,8 @@ function getEnemyBackgroundSVG(enemy, zone) {
     for (let k = 0; k < ringCount; k++) {
         const rx = 180 + (k * 40);
         const ry = 180 + (k * 40);
-        const op = 0.03 + (0.02 * k);
-        ringsSvg += `<ellipse cx="150" cy="180" rx="${rx}" ry="${ry}" fill="none" stroke="${accentColor}" stroke-width="2" stroke-dasharray="10 15" opacity="${op}" />`;
+        const op = 0.02 + (0.015 * k);
+        ringsSvg += `<ellipse cx="150" cy="180" rx="${rx}" ry="${ry}" fill="none" stroke="${accentColor}" stroke-width="1.5" stroke-dasharray="10 15" opacity="${op}" />`;
     }
 
     const svg = `
@@ -3689,17 +3717,92 @@ function getEnemyBackgroundSVG(enemy, zone) {
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
         </defs>
+        
+        <!-- Base Dark Fantasy Gradient Background -->
         <rect width="100%" height="100%" fill="url(#bgGrad)" />
+        
+        <!-- Orbiting Rings -->
         ${ringsSvg}
+        
+        <!-- Floating Particles -->
         ${bubblesSvg}
+        
+        <!-- Outer Sigil Ring -->
+        <circle cx="150" cy="180" r="100" fill="none" stroke="${glowColor}" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.3" />
+        <circle cx="150" cy="180" r="88" fill="none" stroke="${glowColor}" stroke-width="1" opacity="0.2" />
+
+        <!-- Centered Glowing Large Custom Runic Fantasy Seal -->
         <g transform="translate(150, 180) rotate(${rotation}) scale(${scale})">
-            <text x="0" y="45" font-size="120" text-anchor="middle" dominant-baseline="middle" opacity="0.08" fill="${accentColor}" filter="url(#glow)">${icon}</text>
-            <text x="0" y="45" font-size="110" text-anchor="middle" dominant-baseline="middle" opacity="0.14" fill="#ffffff">${icon}</text>
+            <!-- Sigil Glow Shadow -->
+            <path d="${path}" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" opacity="0.1" />
+            <!-- Main Sigil Vector Path -->
+            <path d="${path}" fill="none" stroke="${glowColor}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.25" />
         </g>
     </svg>
     `.trim();
 
     return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+function getEnemyWatermarkHTML(enemy) {
+    const name = enemy.name.toLowerCase();
+    const icon = enemy.icon;
+    
+    let hash = 0;
+    for (let i = 0; i < enemy.id.length; i++) {
+        hash = enemy.id.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    
+    let path = "";
+    let glowColor = "rgba(255, 255, 255, 0.4)";
+    
+    if (name.includes("fire") || name.includes("molten") || name.includes("cinder") || icon === "🔥" || icon === "🌋") {
+        path = `M 0 -60 L 50 25 L -50 25 Z M 0 -42 L 35 17 L -35 17 Z`;
+        glowColor = "rgba(255, 80, 0, 0.4)";
+    } else if (name.includes("frost") || name.includes("glacier") || name.includes("ice") || icon === "❄️" || icon === "🐆") {
+        glowColor = "rgba(0, 180, 255, 0.45)";
+        for (let a = 0; a < 6; a++) {
+            const angle = (a * Math.PI) / 3;
+            const x1 = Math.round(Math.cos(angle) * 18);
+            const y1 = Math.round(Math.sin(angle) * 18);
+            const x2 = Math.round(Math.cos(angle) * 55);
+            const y2 = Math.round(Math.sin(angle) * 55);
+            path += `M 0 0 L ${x1} ${y1} M ${x1} ${y1} L ${x2} ${y2} `;
+        }
+    } else if (name.includes("shadow") || name.includes("death") || name.includes("grim") || name.includes("ghoul") || icon === "🧛" || icon === "🧟" || icon === "🧙‍♂️") {
+        path = `M -45 0 A 45 45 0 1 0 45 0 A 35 35 0 1 1 -45 0 M 0 -45 L 0 45`;
+        glowColor = "rgba(163, 53, 238, 0.4)";
+    } else if (name.includes("jungle") || name.includes("tiger") || name.includes("pirate") || icon === "🐅" || icon === "🏴‍☠️") {
+        path = `M 0 -60 C 30 -30 38 8 0 50 C -30 8 -28 -30 0 -60 M -25 -8 Q 0 -15 25 -8`;
+        glowColor = "rgba(30, 255, 0, 0.35)";
+    } else {
+        path = `M 0 -55 L 38 -34 L 38 17 C 38 46 0 63 0 63 C 0 63 -38 46 -38 17 L -38 -34 Z`;
+        const hue = Math.abs(hash % 360);
+        glowColor = `hsla(${hue}, 100%, 70%, 0.35)`;
+    }
+
+    return `
+        <div class="enemy-portrait-watermark" style="position: absolute; right: 10px; bottom: 10px; width: 110px; height: 110px; opacity: 0.28; pointer-events: none; user-select: none; z-index: 1;">
+            <svg width="100%" height="100%" viewBox="-80 -80 160 160" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+                <defs>
+                    <filter id="badgeGlow">
+                        <feGaussianBlur stdDeviation="4" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                </defs>
+                <circle cx="0" cy="0" r="70" fill="none" stroke="${glowColor}" stroke-width="1.2" stroke-dasharray="3 5" opacity="0.3" />
+                <circle cx="0" cy="0" r="62" fill="none" stroke="${glowColor}" stroke-width="0.8" opacity="0.2" />
+                
+                <!-- Glow sigil -->
+                <path d="${path}" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#badgeGlow)" opacity="0.12" />
+                <!-- Front sigil -->
+                <path d="${path}" fill="none" stroke="${glowColor}" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" opacity="0.35" />
+                
+                <!-- Tiny Element Icon Indicator at center -->
+                <text x="0" y="8" font-size="24" text-anchor="middle" dominant-baseline="middle" opacity="0.2" fill="#ffffff">${icon}</text>
+            </svg>
+        </div>
+    `.trim();
 }
 
 function selectZone(idx) {
@@ -3832,11 +3935,7 @@ function renderEnemyList() {
 
         let watermarkHtml = "";
         if (enemy.id !== "ignis_firelord") {
-            watermarkHtml = `
-                <div class="enemy-portrait-watermark" style="position: absolute; right: -10px; bottom: -15px; font-size: 7.5rem; opacity: 0.14; filter: blur(0.5px); pointer-events: none; user-select: none; transform: rotate(15deg); z-index: 1;">
-                    ${enemy.icon}
-                </div>
-            `;
+            watermarkHtml = getEnemyWatermarkHTML(enemy);
         }
 
         card.innerHTML = `
@@ -5559,6 +5658,7 @@ if (typeof module !== 'undefined' && module.exports) {
         startQuest,
         getSlotIconPlaceholder,
         getZoneAsset,
-        getEnemyBackgroundSVG
+        getEnemyBackgroundSVG,
+        getEnemyWatermarkHTML
     };
 }
