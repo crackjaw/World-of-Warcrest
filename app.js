@@ -3673,10 +3673,18 @@ function renderEnemyList() {
         const isBoss = enemy.name.includes("[Boss]");
         const isElite = enemy.name.includes("[Elite]");
 
-        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.5) 0%, rgba(12, 13, 17, 0.75) 100%), url('${asset.src}')`;
+        // Resolve portrait image if available for the specific enemy
+        let bgImageSrc = asset.src;
+        if (enemy.id === "ignis_firelord") {
+            bgImageSrc = "assets/ignis_firelord.png";
+        }
+
+        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.5) 0%, rgba(12, 13, 17, 0.75) 100%), url('${bgImageSrc}')`;
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
         card.style.textShadow = "1px 1px 3px rgba(0, 0, 0, 0.9)";
+        card.style.position = "relative";
+        card.style.overflow = "hidden";
 
         // Check if dungeon or raid enemy is unlocked
         const isDungeonOrRaid = zone.type === "dungeon" || zone.type === "raid";
@@ -3695,7 +3703,6 @@ function renderEnemyList() {
             card.style.opacity = "0.45";
             card.style.filter = "grayscale(80%)";
             card.style.border = "1px dashed rgba(255, 0, 0, 0.3)";
-            card.style.position = "relative";
         } else {
             let borderStyle = isBoss 
                 ? "1px solid var(--wow-text-gold)" 
@@ -3724,36 +3731,46 @@ function renderEnemyList() {
         });
 
         const buttonHtml = isUnlocked ? `
-            <button class="wow-button" style="margin-top: auto;" onclick="openDispatchModal(${currentZoneIndex}, '${enemy.id}')">
+            <button class="wow-button" style="margin-top: auto; position: relative; z-index: 2;" onclick="openDispatchModal(${currentZoneIndex}, '${enemy.id}')">
                 Send Hero
             </button>
         ` : `
-            <button class="wow-button secondary" style="margin-top: auto; cursor: not-allowed; opacity: 0.6; pointer-events: none;" disabled>
+            <button class="wow-button secondary" style="margin-top: auto; cursor: not-allowed; opacity: 0.6; pointer-events: none; position: relative; z-index: 2;" disabled>
                 🔒 Locked (Requires: ${prevEnemy ? prevEnemy.name : "Previous"})
             </button>
         `;
         const stats = (gameState.enemyStats && gameState.enemyStats[enemy.id]) || { kills: 0, deaths: 0 };
 
+        let watermarkHtml = "";
+        if (enemy.id !== "ignis_firelord") {
+            watermarkHtml = `
+                <div class="enemy-portrait-watermark" style="position: absolute; right: -10px; bottom: -15px; font-size: 7.5rem; opacity: 0.14; filter: blur(0.5px); pointer-events: none; user-select: none; transform: rotate(15deg); z-index: 1;">
+                    ${enemy.icon}
+                </div>
+            `;
+        }
+
         card.innerHTML = `
-            <div class="enemy-card-header">
+            ${watermarkHtml}
+            <div class="enemy-card-header" style="position: relative; z-index: 2;">
                 <h3>${enemy.icon} ${enemy.name}</h3>
                 <span class="enemy-level-tag">Lv. ${enemy.level}</span>
             </div>
             
-            <div class="enemy-details">
+            <div class="enemy-details" style="position: relative; z-index: 2;">
                 <div>Health: <strong>${enemy.hp} HP</strong></div>
                 <div>Damage: <strong>${enemy.atk} Atk</strong></div>
                 <div>Rewards: <strong>+${enemy.xp} XP</strong>, <strong>${parseCoins(enemy.copper)}</strong></div>
                 <div>Duration: <strong>${enemy.duration}s</strong></div>
             </div>
 
-            <div class="enemy-tracking">
+            <div class="enemy-tracking" style="position: relative; z-index: 2;">
                 <span style="color:var(--wow-text-gold); font-weight:bold;">Record:</span>
                 <span style="color:#1eff00; margin-left:4px;">🏆 ${stats.kills} Wins</span>
                 <span style="color:#ff3333; margin-left:4px;">💀 ${stats.deaths} Losses</span>
             </div>
 
-            <div class="enemy-drops" style="font-size: 0.75rem;">
+            <div class="enemy-drops" style="font-size: 0.75rem; position: relative; z-index: 2;">
                 <strong style="color:var(--wow-text-gold);">Possible Drops:</strong>
                 <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">
                     ${dropsHtml}

@@ -1052,6 +1052,35 @@ test('Zone asset mappings and enemy card styled background covers resolve succes
     const firstCard = container.children[0];
     assert.ok(firstCard.style.backgroundImage.includes('url('), 'Card style should include background image cover');
     assert.strictEqual(firstCard.style.backgroundSize, 'cover', 'Card background size should be cover');
+    assert.strictEqual(firstCard.style.position, 'relative', 'Card position should be relative to hold absolute portraits');
+    assert.strictEqual(firstCard.style.overflow, 'hidden', 'Card overflow should be hidden to clip large portraits');
+
+    // Assert that the first card has the watermark portrait div for normal enemies in its innerHTML
+    assert.ok(firstCard.innerHTML.includes('enemy-portrait-watermark'), 'Normal enemy card should contain a watermark portrait element');
+    assert.ok(firstCard.innerHTML.includes('position: absolute'), 'Watermark style should include position absolute');
+
+    // 3. Select Obsidian Caldera [Raid] zone to test custom Ignis the Firelord portrait
+    const calderaIndex = app.ZONE_DATABASE.findIndex(z => z.name === "Obsidian Caldera [Raid]");
+    if (calderaIndex !== -1) {
+        const calderaContainer = document.getElementById('enemy-list-container');
+        calderaContainer.children = []; // Clear children to bypass mock accumulation
+        
+        app.selectZone(calderaIndex);
+
+        const cards = Array.from(calderaContainer.children);
+        
+        // Find Ignis card
+        const ignisCard = cards.find(c => c.innerHTML.includes('Ignis the Firelord'));
+        assert.ok(ignisCard, 'Ignis the Firelord card should be found inside Obsidian Caldera');
+        assert.ok(ignisCard.style.backgroundImage.includes('assets/ignis_firelord.png'), 'Ignis card should use his custom portrait file');
+
+        // Verify Ignis card does not have the watermark portrait since it uses high-fidelity custom portrait background
+        assert.ok(!ignisCard.innerHTML.includes('enemy-portrait-watermark'), 'Ignis card should not contain a watermark overlay');
+
+        // Restore zone index
+        calderaContainer.children = [];
+        app.selectZone(0);
+    }
 });
 
 
