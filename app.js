@@ -3684,42 +3684,65 @@ function getEnemyBackgroundSVG(enemy, zone) {
     }
 
     const rotation = Math.abs((hash >> 2) % 30) - 15;
-    const scale = 1.2 + (Math.abs((hash >> 4) % 4) * 0.1);
-    const bubbleCount = 4 + (Math.abs(hash % 5));
+    const scale = 1.1 + (Math.abs((hash >> 4) % 4) * 0.08);
+    const bubbleCount = 5 + (Math.abs(hash % 5));
     
     let bubblesSvg = "";
     for (let j = 0; j < bubbleCount; j++) {
-        const cx = 50 + Math.abs((hash >> (j * 2)) % 200);
-        const cy = 50 + Math.abs((hash >> (j * 3)) % 250);
-        const r = 20 + Math.abs((hash >> (j * 4)) % 60);
-        const op = 0.08 + (Math.abs((hash >> (j * 5)) % 10) * 0.02);
-        bubblesSvg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${particleColor}" opacity="${op}" />`;
+        const cx = 40 + Math.abs((hash >> (j * 2)) % 220);
+        const cy = 40 + Math.abs((hash >> (j * 3)) % 280);
+        const r = 15 + Math.abs((hash >> (j * 4)) % 50);
+        const op = 0.06 + (Math.abs((hash >> (j * 5)) % 10) * 0.02);
+        bubblesSvg += `    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${particleColor}" opacity="${op}" />\n`;
     }
 
     const ringCount = 2 + (Math.abs(hash % 3));
     let ringsSvg = "";
     for (let k = 0; k < ringCount; k++) {
-        const rx = 180 + (k * 40);
-        const ry = 180 + (k * 40);
-        const op = 0.06 + (0.04 * k);
-        ringsSvg += `<ellipse cx="150" cy="180" rx="${rx}" ry="${ry}" fill="none" stroke="${accentColor}" stroke-width="1.8" stroke-dasharray="10 15" opacity="${op}" />`;
+        const rx = 170 + (k * 35);
+        const ry = 170 + (k * 35);
+        const op = 0.05 + (0.03 * k);
+        ringsSvg += `    <ellipse cx="150" cy="180" rx="${rx}" ry="${ry}" fill="none" stroke="${accentColor}" stroke-width="1.8" stroke-dasharray="10 15" opacity="${op}" />\n`;
     }
+
+    // Outer thematic borders based on trash/elite/boss classification
+    const isBoss = enemy.name.includes("[Boss]");
+    const isElite = enemy.name.includes("[Elite]");
+    
+    let borderColor = glowColor;
+    let borderWidth = "1.5";
+    let dashArray = "4 6";
+    let outerEmblemGlow = "";
+    
+    if (isBoss) {
+        borderColor = "rgba(255, 209, 0, 0.6)"; // Rich gold
+        borderWidth = "2.5";
+        dashArray = "none";
+        outerEmblemGlow = `    <circle cx="150" cy="180" r="115" fill="none" stroke="rgba(255, 209, 0, 0.25)" stroke-width="6" opacity="0.3" filter="url(#glow)" />\n`;
+    } else if (isElite) {
+        borderColor = "rgba(30, 255, 0, 0.5)"; // Green
+        borderWidth = "2";
+        dashArray = "10 5";
+    }
+    
+    // Gothic Capital Monospace Spaced Name
+    const spacedName = enemy.name.replace(/\[(Boss|Elite)\]/gi, '').trim().toUpperCase().split('').join(' ');
 
     const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="300" height="360" viewBox="0 0 300 360">
         <defs>
-            <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+            <radialGradient id="bgGrad${enemy.id}" cx="50%" cy="50%" r="70%">
                 <stop offset="0%" stop-color="${primaryColor}" />
                 <stop offset="100%" stop-color="${secondaryColor}" />
             </radialGradient>
-            <filter id="glow">
+            <filter id="glow${enemy.id}">
                 <feGaussianBlur stdDeviation="4" result="blur" />
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
         </defs>
         
         <!-- Base Dark Fantasy Gradient Background -->
-        <rect width="100%" height="100%" fill="url(#bgGrad)" />
+        <rect width="100%" height="100%" fill="url(#bgGrad${enemy.id})" />
         
         <!-- Orbiting Rings -->
         ${ringsSvg}
@@ -3727,17 +3750,20 @@ function getEnemyBackgroundSVG(enemy, zone) {
         <!-- Floating Particles -->
         ${bubblesSvg}
         
-        <!-- Outer Sigil Ring -->
-        <circle cx="150" cy="180" r="100" fill="none" stroke="${glowColor}" stroke-width="1.8" stroke-dasharray="4 6" opacity="0.55" />
-        <circle cx="150" cy="180" r="88" fill="none" stroke="${glowColor}" stroke-width="1.2" opacity="0.38" />
+        <!-- Outer Sigil Ring borders -->
+        ${outerEmblemGlow}    <circle cx="150" cy="180" r="100" fill="none" stroke="${borderColor}" stroke-width="${borderWidth}" stroke-dasharray="${dashArray}" opacity="0.55" />
+        <circle cx="150" cy="180" r="88" fill="none" stroke="${borderColor}" stroke-width="1.2" opacity="0.38" />
 
         <!-- Centered Glowing Large Custom Runic Fantasy Seal -->
         <g transform="translate(150, 180) rotate(${rotation}) scale(${scale})">
             <!-- Sigil Glow Shadow -->
-            <path d="${path}" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)" opacity="0.22" />
+            <path d="${path}" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${enemy.id})" opacity="0.22" />
             <!-- Main Sigil Vector Path -->
             <path d="${path}" fill="none" stroke="${glowColor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.55" />
         </g>
+        
+        <!-- Monospace spaced parodied name engraving at bottom -->
+        <text x="150" y="328" font-family="'Courier New', Courier, monospace" font-size="10.5" font-weight="bold" fill="#ffffff" opacity="0.32" text-anchor="middle" letter-spacing="1">${spacedName}</text>
     </svg>
     `.trim();
 
@@ -3866,7 +3892,7 @@ function renderEnemyList() {
         const isElite = enemy.name.includes("[Elite]");
 
         // Resolve unique background portrait SVG artwork file for the specific enemy to avoid reused art
-        let bgImageSrc = `assets/portraits/${enemy.id}.svg`;
+        let bgImageSrc = getEnemyBackgroundSVG(enemy, zone);
         if (enemy.id === "ignis_firelord") {
             bgImageSrc = "assets/ignis_firelord.png";
         }

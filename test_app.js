@@ -1051,7 +1051,7 @@ test('Zone asset mappings and enemy card styled background covers resolve succes
 
     const firstCard = container.children[0];
     assert.ok(firstCard.style.backgroundImage.includes('url('), 'Card style should include background image cover');
-    assert.ok(firstCard.style.backgroundImage.includes('assets/portraits/'), 'Card style should point to the custom portrait file in assets/portraits/');
+    assert.ok(firstCard.style.backgroundImage.includes('data:image/svg+xml'), 'Card style should use an inline data URI SVG for bulletproof local file:// and CORS compatibility');
     assert.strictEqual(firstCard.style.backgroundSize, 'cover', 'Card background size should be cover');
     assert.strictEqual(firstCard.style.position, 'relative', 'Card position should be relative to hold absolute portraits');
     assert.strictEqual(firstCard.style.overflow, 'hidden', 'Card overflow should be hidden to clip large portraits');
