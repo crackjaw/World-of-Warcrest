@@ -3614,11 +3614,11 @@ function getZoneAsset(name) {
 }
 
 function getEnemyBackgroundSVG(enemy, zone) {
-    let primaryColor = "#1a1c23";
-    let secondaryColor = "#0f1015";
-    let accentColor = "rgba(255, 255, 255, 0.15)";
-    let particleColor = "rgba(255, 255, 255, 0.22)";
-    let glowColor = "rgba(255, 255, 255, 0.4)";
+    let primaryColor = "#2a2d3d";
+    let secondaryColor = "#141620";
+    let accentColor = "rgba(255, 255, 255, 0.25)";
+    let particleColor = "rgba(255, 255, 255, 0.35)";
+    let glowColor = "rgba(255, 255, 255, 0.65)";
     
     const name = enemy.name.toLowerCase();
     const icon = enemy.icon;
@@ -3632,18 +3632,18 @@ function getEnemyBackgroundSVG(enemy, zone) {
     let path = "";
     
     if (name.includes("fire") || name.includes("molten") || name.includes("cinder") || icon === "🔥" || icon === "🌋") {
-        primaryColor = "#4c1205";
-        secondaryColor = "#1a0400";
-        accentColor = "rgba(255, 68, 0, 0.15)";
-        particleColor = "rgba(255, 120, 0, 0.25)";
-        glowColor = "rgba(255, 80, 0, 0.55)";
+        primaryColor = "#731c0a"; // Brighter rich red-orange
+        secondaryColor = "#330800"; // Rich dark crimson
+        accentColor = "rgba(255, 90, 30, 0.35)";
+        particleColor = "rgba(255, 160, 50, 0.45)";
+        glowColor = "rgba(255, 110, 40, 0.85)";
         path = `M 0 -60 L 50 25 L -50 25 Z M 0 -42 L 35 17 L -35 17 Z M 0 -25 L 20 8 L -20 8 Z`;
     } else if (name.includes("frost") || name.includes("glacier") || name.includes("ice") || icon === "❄️" || icon === "🐆") {
-        primaryColor = "#0c3559";
-        secondaryColor = "#03172b";
-        accentColor = "rgba(0, 150, 255, 0.18)";
-        particleColor = "rgba(100, 200, 255, 0.28)";
-        glowColor = "rgba(0, 180, 255, 0.65)";
+        primaryColor = "#154d7e"; // Vibrant alpine blue
+        secondaryColor = "#092440"; // Rich deep blue
+        accentColor = "rgba(30, 170, 255, 0.38)";
+        particleColor = "rgba(130, 220, 255, 0.48)";
+        glowColor = "rgba(30, 200, 255, 0.88)";
         // Symmetrical ice star compass
         for (let a = 0; a < 6; a++) {
             const angle = (a * Math.PI) / 3;
@@ -3659,27 +3659,27 @@ function getEnemyBackgroundSVG(enemy, zone) {
             path += `M ${cx1} ${cy1} L ${cx2} ${cy2} `;
         }
     } else if (name.includes("shadow") || name.includes("death") || name.includes("grim") || name.includes("ghoul") || icon === "🧛" || icon === "🧟" || icon === "🧙‍♂️") {
-        primaryColor = "#3d134f";
-        secondaryColor = "#150221";
-        accentColor = "rgba(163, 53, 238, 0.16)";
-        particleColor = "rgba(180, 80, 255, 0.25)";
-        glowColor = "rgba(163, 53, 238, 0.55)";
+        primaryColor = "#5d2078"; // Vibrant royal purple
+        secondaryColor = "#270638"; // Deep necrotic shadow
+        accentColor = "rgba(180, 70, 255, 0.36)";
+        particleColor = "rgba(210, 120, 255, 0.45)";
+        glowColor = "rgba(190, 80, 255, 0.85)";
         path = `M -45 0 A 45 45 0 1 0 45 0 A 35 35 0 1 1 -45 0 M 0 -45 L 0 45 M -45 0 L 45 0`;
     } else if (name.includes("jungle") || name.includes("tiger") || name.includes("pirate") || icon === "🐅" || icon === "🏴‍☠️") {
-        primaryColor = "#114529";
-        secondaryColor = "#041b0f";
-        accentColor = "rgba(30, 255, 0, 0.15)";
-        particleColor = "rgba(80, 255, 80, 0.25)";
-        glowColor = "rgba(30, 255, 0, 0.5)";
+        primaryColor = "#1a5e39"; // Emerald jungle green
+        secondaryColor = "#0a2e1c"; // Deep tropical forest
+        accentColor = "rgba(50, 255, 50, 0.35)";
+        particleColor = "rgba(100, 255, 100, 0.45)";
+        glowColor = "rgba(50, 255, 50, 0.85)";
         path = `M 0 -60 C 30 -30 38 8 0 50 C -30 8 -28 -30 0 -60 M 0 -60 L 0 50 M -25 -8 Q 0 -15 25 -8`;
     } else {
         // Standard shield runic compass
         const hue = Math.abs(hash % 360);
-        primaryColor = `hsl(${hue}, 35%, 15%)`;
-        secondaryColor = `hsl(${hue}, 45%, 6%)`;
-        accentColor = `hsla(${hue}, 100%, 50%, 0.14)`;
-        particleColor = `hsla(${hue}, 100%, 70%, 0.22)`;
-        glowColor = `hsla(${hue}, 100%, 70%, 0.55)`;
+        primaryColor = `hsl(${hue}, 40%, 26%)`; // Brighter runic base
+        secondaryColor = `hsl(${hue}, 50%, 11%)`; // Deep background
+        accentColor = `hsla(${hue}, 100%, 60%, 0.35)`;
+        particleColor = `hsla(${hue}, 100%, 80%, 0.45)`;
+        glowColor = `hsla(${hue}, 100%, 80%, 0.85)`;
         path = `M 0 -55 L 38 -34 L 38 17 C 38 46 0 63 0 63 C 0 63 -38 46 -38 17 L -38 -34 Z M -38 -34 L 38 17 M 38 -34 L -38 17`;
     }
 
@@ -3692,7 +3692,7 @@ function getEnemyBackgroundSVG(enemy, zone) {
         const cx = 40 + Math.abs((hash >> (j * 2)) % 220);
         const cy = 40 + Math.abs((hash >> (j * 3)) % 280);
         const r = 15 + Math.abs((hash >> (j * 4)) % 50);
-        const op = 0.06 + (Math.abs((hash >> (j * 5)) % 10) * 0.02);
+        const op = 0.12 + (Math.abs((hash >> (j * 5)) % 10) * 0.03); // Brighter dust particles
         bubblesSvg += `    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${particleColor}" opacity="${op}" />\n`;
     }
 
@@ -3701,8 +3701,8 @@ function getEnemyBackgroundSVG(enemy, zone) {
     for (let k = 0; k < ringCount; k++) {
         const rx = 170 + (k * 35);
         const ry = 170 + (k * 35);
-        const op = 0.05 + (0.03 * k);
-        ringsSvg += `    <ellipse cx="150" cy="180" rx="${rx}" ry="${ry}" fill="none" stroke="${accentColor}" stroke-width="1.8" stroke-dasharray="10 15" opacity="${op}" />\n`;
+        const op = 0.12 + (0.05 * k); // More visible orbiting rings
+        ringsSvg += `    <ellipse cx="150" cy="180" rx="${rx}" ry="${ry}" fill="none" stroke="${accentColor}" stroke-width="2.2" stroke-dasharray="10 15" opacity="${op}" />\n`;
     }
 
     // Outer thematic borders based on trash/elite/boss classification
@@ -3710,18 +3710,18 @@ function getEnemyBackgroundSVG(enemy, zone) {
     const isElite = enemy.name.includes("[Elite]");
     
     let borderColor = glowColor;
-    let borderWidth = "1.5";
+    let borderWidth = "2.0"; // Thicker borders
     let dashArray = "4 6";
     let outerEmblemGlow = "";
     
     if (isBoss) {
-        borderColor = "rgba(255, 209, 0, 0.6)"; // Rich gold
-        borderWidth = "2.5";
+        borderColor = "rgba(255, 209, 0, 0.85)"; // Vibrant gold
+        borderWidth = "3.2";
         dashArray = "none";
-        outerEmblemGlow = `    <circle cx="150" cy="180" r="115" fill="none" stroke="rgba(255, 209, 0, 0.25)" stroke-width="6" opacity="0.3" filter="url(#glow)" />\n`;
+        outerEmblemGlow = `    <circle cx="150" cy="180" r="115" fill="none" stroke="rgba(255, 209, 0, 0.35)" stroke-width="8" opacity="0.45" filter="url(#glow${enemy.id})" />\n`;
     } else if (isElite) {
-        borderColor = "rgba(30, 255, 0, 0.5)"; // Green
-        borderWidth = "2";
+        borderColor = "rgba(30, 255, 0, 0.75)"; // Vibrant Green
+        borderWidth = "2.6";
         dashArray = "10 5";
     }
     
@@ -3736,7 +3736,7 @@ function getEnemyBackgroundSVG(enemy, zone) {
                 <stop offset="100%" stop-color="${secondaryColor}" />
             </radialGradient>
             <filter id="glow${enemy.id}">
-                <feGaussianBlur stdDeviation="4" result="blur" />
+                <feGaussianBlur stdDeviation="5" result="blur" />
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
         </defs>
@@ -3751,19 +3751,23 @@ function getEnemyBackgroundSVG(enemy, zone) {
         ${bubblesSvg}
         
         <!-- Outer Sigil Ring borders -->
-        ${outerEmblemGlow}    <circle cx="150" cy="180" r="100" fill="none" stroke="${borderColor}" stroke-width="${borderWidth}" stroke-dasharray="${dashArray}" opacity="0.55" />
-        <circle cx="150" cy="180" r="88" fill="none" stroke="${borderColor}" stroke-width="1.2" opacity="0.38" />
+        ${outerEmblemGlow}    <circle cx="150" cy="180" r="100" fill="none" stroke="${borderColor}" stroke-width="${borderWidth}" stroke-dasharray="${dashArray}" opacity="0.75" />
+        <circle cx="150" cy="180" r="88" fill="none" stroke="${borderColor}" stroke-width="1.6" opacity="0.55" />
 
         <!-- Centered Glowing Large Custom Runic Fantasy Seal -->
         <g transform="translate(150, 180) rotate(${rotation}) scale(${scale})">
             <!-- Sigil Glow Shadow -->
-            <path d="${path}" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${enemy.id})" opacity="0.22" />
+            <path d="${path}" fill="none" stroke="#ffffff" stroke-width="6.0" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow${enemy.id})" opacity="0.35" />
             <!-- Main Sigil Vector Path -->
-            <path d="${path}" fill="none" stroke="${glowColor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.55" />
+            <path d="${path}" fill="none" stroke="${glowColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.8" />
         </g>
         
+        <!-- Glowing Centered Character Avatar Portrait -->
+        <text x="150" y="195" font-size="82" text-anchor="middle" dominant-baseline="middle" filter="url(#glow${enemy.id})" opacity="0.3" fill="#ffffff">${enemy.icon}</text>
+        <text x="150" y="195" font-size="74" text-anchor="middle" dominant-baseline="middle" opacity="0.95">${enemy.icon}</text>
+
         <!-- Monospace spaced parodied name engraving at bottom -->
-        <text x="150" y="328" font-family="'Courier New', Courier, monospace" font-size="10.5" font-weight="bold" fill="#ffffff" opacity="0.32" text-anchor="middle" letter-spacing="1">${spacedName}</text>
+        <text x="150" y="328" font-family="'Courier New', Courier, monospace" font-size="11" font-weight="bold" fill="#ffffff" opacity="0.55" text-anchor="middle" letter-spacing="1.2">${spacedName}</text>
     </svg>
     `.trim();
 
@@ -3897,7 +3901,7 @@ function renderEnemyList() {
             bgImageSrc = "assets/ignis_firelord.png";
         }
 
-        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.5) 0%, rgba(12, 13, 17, 0.75) 100%), url('${bgImageSrc}')`;
+        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.15) 0%, rgba(12, 13, 17, 0.45) 100%), url('${bgImageSrc}')`;
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
         card.style.textShadow = "1px 1px 3px rgba(0, 0, 0, 0.9)";

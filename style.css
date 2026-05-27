@@ -686,7 +686,7 @@ main {
 }
 
 .enemy-card {
-  background: rgba(12, 13, 17, 0.8);
+  background: rgba(12, 13, 17, 0.35);
   border: 1px solid var(--wow-border-dark);
   border-radius: 6px;
   padding: 15px;
