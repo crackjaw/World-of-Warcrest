@@ -3613,6 +3613,47 @@ function getZoneAsset(name) {
     return { src, filter };
 }
 
+function getEnemyBaseIllustration(enemy) {
+    const name = enemy.name.toLowerCase();
+    const icon = enemy.icon;
+    
+    let baseImgName = "base_wolf"; // default fallback
+    
+    if (name.includes("kobold") || name.includes("vermin") || name.includes("digger") || icon === "🐹" || icon === "⛏️") {
+        baseImgName = "base_kobold";
+    } else if (name.includes("spider") || icon === "🕷️") {
+        baseImgName = "base_spider";
+    } else if (name.includes("wolf") || name.includes("hound") || name.includes("dog") || icon === "🐺") {
+        baseImgName = "base_wolf";
+    } else if (name.includes("sabertooth") || name.includes("tiger") || name.includes("panther") || name.includes("cat") || icon === "🐆" || icon === "🐅") {
+        baseImgName = "base_sabertooth";
+    } else if (name.includes("raptor") || name.includes("basilisk") || name.includes("lizard") || icon === "🦖" || icon === "🦎") {
+        baseImgName = "base_raptor";
+    } else if (name.includes("outlaw") || name.includes("scamp") || name.includes("pillager") || name.includes("warden") || name.includes("inmate") || icon === "🧑‍🎤") {
+        baseImgName = "base_outlaw";
+    } else if (name.includes("pirate") || name.includes("buccaneer") || name.includes("corsair") || icon === "🏴‍☠️") {
+        baseImgName = "base_pirate";
+    } else if (name.includes("golem") || name.includes("shredder") || name.includes("mech") || name.includes("mechanic") || icon === "🤖" || icon === "⚙️") {
+        baseImgName = "base_golem";
+    } else if (name.includes("ghoul") || name.includes("zombie") || name.includes("plague") || icon === "🧟") {
+        baseImgName = "base_ghoul";
+    } else if (name.includes("gargoyle") || name.includes("horror") || name.includes("crypt") || icon === "🧛" || icon === "🦇") {
+        baseImgName = "base_gargoyle";
+    } else if (name.includes("fire") || name.includes("molten") || name.includes("cinder") || icon === "🔥" || icon === "🌋") {
+        baseImgName = "base_fire_elemental";
+    } else if (name.includes("crystal") || name.includes("giant") || name.includes("frost") || name.includes("ice") || name.includes("water") || name.includes("sprout") || icon === "❄️" || icon === "💧") {
+        baseImgName = "base_crystal_elemental";
+    } else if (name.includes("troll") || name.includes("ogre") || name.includes("scalp") || name.includes("greentooth") || icon === "👹") {
+        baseImgName = "base_troll";
+    } else if (name.includes("dragon") || name.includes("drake") || name.includes("wyrm") || name.includes("whelp") || icon === "🐉" || icon === "🐲") {
+        baseImgName = "base_dragon";
+    } else if (name.includes("priest") || name.includes("prophet") || name.includes("cultist") || name.includes("zealot") || name.includes("crusader") || name.includes("chaplain") || name.includes("baron") || icon === "🧙‍♂️" || icon === "⛪") {
+        baseImgName = "base_cultist";
+    }
+    
+    return `assets/portraits/${baseImgName}.png`;
+}
+
 function getEnemyBackgroundSVG(enemy, zone) {
     let primaryColor = "#2a2d3d";
     let secondaryColor = "#141620";
@@ -3741,8 +3782,8 @@ function getEnemyBackgroundSVG(enemy, zone) {
             </filter>
         </defs>
         
-        <!-- Base Dark Fantasy Gradient Background -->
-        <rect width="100%" height="100%" fill="url(#bgGrad${enemy.id})" />
+        <!-- Base Dark Fantasy Gradient Background with semi-transparency for underlying base illustration blend -->
+        <rect width="100%" height="100%" fill="url(#bgGrad${enemy.id})" opacity="0.45" />
         
         <!-- Orbiting Rings -->
         ${ringsSvg}
@@ -3762,10 +3803,6 @@ function getEnemyBackgroundSVG(enemy, zone) {
             <path d="${path}" fill="none" stroke="${glowColor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.8" />
         </g>
         
-        <!-- Glowing Centered Character Avatar Portrait -->
-        <text x="150" y="195" font-size="82" text-anchor="middle" dominant-baseline="middle" filter="url(#glow${enemy.id})" opacity="0.3" fill="#ffffff">${enemy.icon}</text>
-        <text x="150" y="195" font-size="74" text-anchor="middle" dominant-baseline="middle" opacity="0.95">${enemy.icon}</text>
-
         <!-- Monospace spaced parodied name engraving at bottom -->
         <text x="150" y="328" font-family="'Courier New', Courier, monospace" font-size="11" font-weight="bold" fill="#ffffff" opacity="0.55" text-anchor="middle" letter-spacing="1.2">${spacedName}</text>
     </svg>
@@ -3897,11 +3934,12 @@ function renderEnemyList() {
 
         // Resolve unique background portrait SVG artwork file for the specific enemy to avoid reused art
         let bgImageSrc = getEnemyBackgroundSVG(enemy, zone);
+        let baseIllustration = getEnemyBaseIllustration(enemy);
         if (enemy.id === "ignis_firelord") {
-            bgImageSrc = "assets/ignis_firelord.png";
+            baseIllustration = "assets/ignis_firelord.png";
         }
 
-        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.15) 0%, rgba(12, 13, 17, 0.45) 100%), url('${bgImageSrc}')`;
+        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.15) 0%, rgba(12, 13, 17, 0.45) 100%), url('${bgImageSrc}'), url('${baseIllustration}')`;
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
         card.style.textShadow = "1px 1px 3px rgba(0, 0, 0, 0.9)";
