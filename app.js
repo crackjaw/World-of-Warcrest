@@ -3939,7 +3939,7 @@ function renderEnemyList() {
             baseIllustration = "assets/ignis_firelord.png";
         }
 
-        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.15) 0%, rgba(12, 13, 17, 0.45) 100%), url(${bgImageSrc}), url('${baseIllustration}')`;
+        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.15) 0%, rgba(12, 13, 17, 0.45) 100%), url('${bgImageSrc}'), url('${baseIllustration}')`;
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
         card.style.textShadow = "1px 1px 3px rgba(0, 0, 0, 0.9)";
