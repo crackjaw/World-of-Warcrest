@@ -3782,9 +3782,6 @@ function getEnemyBackgroundSVG(enemy, zone) {
             </filter>
         </defs>
         
-        <!-- Base Dark Fantasy Gradient Background with semi-transparency for underlying base illustration blend -->
-        <rect width="100%" height="100%" fill="url(#bgGrad${enemy.id})" opacity="0.45" />
-        
         <!-- Orbiting Rings -->
         ${ringsSvg}
         
@@ -3939,7 +3936,7 @@ function renderEnemyList() {
             baseIllustration = "assets/ignis_firelord.png";
         }
 
-        card.style.backgroundImage = `linear-gradient(180deg, rgba(12, 13, 17, 0.15) 0%, rgba(12, 13, 17, 0.45) 100%), url('${bgImageSrc}'), url('${baseIllustration}')`;
+        card.style.backgroundImage = `url('${bgImageSrc}'), url('${baseIllustration}')`;
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
         card.style.textShadow = "1px 1px 3px rgba(0, 0, 0, 0.9)";
