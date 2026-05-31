@@ -3936,7 +3936,7 @@ function renderEnemyList() {
             baseIllustration = "assets/ignis_firelord.png";
         }
 
-        card.style.backgroundImage = `url('${bgImageSrc}'), url('${baseIllustration}')`;
+        card.style.backgroundImage = `url('${baseIllustration}')`;
         card.style.backgroundSize = "cover";
         card.style.backgroundPosition = "center";
         card.style.textShadow = "1px 1px 3px rgba(0, 0, 0, 0.9)";
