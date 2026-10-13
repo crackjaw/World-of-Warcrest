@@ -88,7 +88,10 @@
                 </div>
                 <div class="panel-title">
                     <h2>Guild Roster</h2>
-                    <span id="roster-limit">Manage your heroes</span>
+                    <button class="wow-button" id="btn-tavern-rest" style="font-size: 0.8rem; padding: 6px 12px; margin-left: 16px;" onclick="restAllIdleHeroes()">
+                        🍺 Tavern Rest (Heal &amp; Revive All)
+                    </button>
+                    <span id="roster-limit" style="margin-left: auto;">Manage your heroes</span>
                 </div>
                 <div class="heroes-grid" id="heroes-grid-container">
                     <!-- Dynamic Hero Cards and Hire Hero Card will be injected here -->
@@ -133,7 +136,7 @@
             <div id="tab-crafting" class="tab-content">
                 <div class="panel-title">
                     <h2>Profession Workshop</h2>
-                    <span>Level up crafters & craft epic items</span>
+                    <span>Level up crafters, roll S-Grade affixes &amp; enchant epic items</span>
                 </div>
                 <div class="crafting-layout">
                     <!-- Crafter Selection Sidebar -->
@@ -181,6 +184,17 @@
                                 <span class="progress-text" id="prof-xp-txt-alchemist">0 / 100 XP</span>
                             </div>
                         </div>
+
+                        <button class="zone-button" id="prof-btn-enchanter" onclick="switchProfession('enchanter')">
+                            ✨ Enchanting
+                        </button>
+                        <div class="crafter-info-box">
+                            <span>Level: <strong id="prof-lvl-enchanter">1</strong></span>
+                            <div class="progress-container">
+                                <div class="progress-bar xp" id="prof-xp-enchanter" style="width: 0%"></div>
+                                <span class="progress-text" id="prof-xp-txt-enchanter">0 / 100 XP</span>
+                            </div>
+                        </div>
                     </div>
                     <!-- Recipes Panel -->
                     <div class="recipes-panel">
@@ -198,10 +212,24 @@
             <div id="tab-inventory" class="tab-content">
                 <div class="panel-title">
                     <h2>Bag Inventory</h2>
-                    <span id="bag-space-txt">0 / 30 slots filled</span>
+                    <div style="display:flex; gap:8px; align-items:center; margin-left:16px; flex-wrap:wrap;">
+                        <button class="wow-button" id="btn-upgrade-bags" style="font-size: 0.75rem; padding: 5px 10px;" onclick="upgradeBagSlots()">
+                            🎒 Expand Bags (+10 Slots)
+                        </button>
+                        <button class="wow-button secondary" id="btn-batch-sell-junk" style="font-size: 0.75rem; padding: 5px 10px;" onclick="batchSellJunk()">
+                            🪙 Sell Common/Junk
+                        </button>
+                    </div>
+                    <span id="bag-space-txt" style="margin-left:auto;">0 / 30 slots filled</span>
                 </div>
-                <div class="inventory-stats">
-                    <span>Click on an item to sell it or equip it onto a hero.</span>
+                <div class="inventory-stats" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+                    <span>Click on an item to inspect affixes, sell, disenchant, or consume.</span>
+                    <div class="inventory-filter-bar" style="display:flex; gap:6px;">
+                        <button class="wow-button secondary inv-filter-btn active" id="inv-filter-all" style="font-size:0.75rem; padding:4px 10px;" onclick="setInventoryFilter('all')">All</button>
+                        <button class="wow-button secondary inv-filter-btn" id="inv-filter-gear" style="font-size:0.75rem; padding:4px 10px;" onclick="setInventoryFilter('gear')">⚔️ Gear</button>
+                        <button class="wow-button secondary inv-filter-btn" id="inv-filter-material" style="font-size:0.75rem; padding:4px 10px;" onclick="setInventoryFilter('material')">🪨 Materials</button>
+                        <button class="wow-button secondary inv-filter-btn" id="inv-filter-consumable" style="font-size:0.75rem; padding:4px 10px;" onclick="setInventoryFilter('consumable')">🧪 Consumables</button>
+                    </div>
                 </div>
                 <div class="inventory-grid" id="inventory-grid-container">
                     <!-- Dynamic Inventory Slots -->
@@ -290,6 +318,10 @@
                         <option value="Rogue">Rogue (🗡️ Leather dual-wield, critical speed)</option>
                         <option value="Priest">Priest (✨ Cloth healer, divine restorative magic)</option>
                         <option value="Paladin">Paladin (🔨 Plate hybrid, balanced battle crusader)</option>
+                        <option value="Ranger">Ranger (🏹 Leather/Mail archer, beast companion &amp; critical volleys)</option>
+                        <option value="Warlock">Warlock (🔮 Cloth dark caster, shadow DoTs &amp; life drain)</option>
+                        <option value="Druid">Druid (🐾 Leather shapeshifter, hybrid tank, healer &amp; caster)</option>
+                        <option value="Shaman">Shaman (⚡ Mail totem mystic, party-wide buffs &amp; chain lightning)</option>
                     </select>
                 </div>
                 <div style="font-size: 0.85rem; background:rgba(0,0,0,0.3); padding:10px; border-radius:4px; border:1px solid var(--wow-border-dark);">
@@ -351,8 +383,9 @@
                     Vendor Sale Price: <span id="item-details-price" style="font-family: monospace;">50c</span>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="display:flex; gap:8px; flex-wrap:wrap;">
                 <button class="wow-button secondary" onclick="closeModal('modal-item-details')">Cancel</button>
+                <button class="wow-button secondary" id="item-details-disenchant-btn" style="display:none; background:#4c1d95; border-color:#8b5cf6; color:#ede9fe;" onclick="disenchantSelectedItem()">✨ Disenchant</button>
                 <button class="wow-button" id="item-details-action-btn" onclick="sellItemDirect()">Sell Directly</button>
             </div>
         </div>
@@ -454,8 +487,10 @@
                     <!-- bottom slots rendered dynamically -->
                 </div>
             </div>
-            <div class="modal-footer" style="padding: 10px 15px;">
-                <button class="wow-button" onclick="closeModal('modal-hero-equipment')" style="width: 100%;">Close Character Sheet</button>
+            <div class="modal-footer" style="padding: 10px 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="wow-button" id="btn-auto-equip-best" onclick="if(selectedEquipHeroId) autoEquipBestGear(selectedEquipHeroId)" style="flex: 1; background: linear-gradient(180deg, #16a34a 0%, #15803d 100%); border-color: #22c55e;">⚡ Auto-Equip Best Gear</button>
+                <button class="wow-button" id="btn-enchant-hero-gear" onclick="if(selectedEquipHeroId) enchantHeroGear(selectedEquipHeroId)" style="flex: 1; background: linear-gradient(180deg, #6d28d9 0%, #4c1d95 100%); border-color: #8b5cf6;">✨ Enchant Equipped Gear</button>
+                <button class="wow-button secondary" onclick="closeModal('modal-hero-equipment')" style="flex: 1;">Close Character Sheet</button>
             </div>
         </div>
     </div>

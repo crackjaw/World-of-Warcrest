@@ -442,6 +442,53 @@ main {
 .class-rogue { background: rgba(255, 245, 105, 0.15); color: var(--class-rogue); }
 .class-priest { background: rgba(255, 255, 255, 0.15); color: var(--class-priest); }
 .class-paladin { background: rgba(245, 140, 186, 0.15); color: var(--class-paladin); }
+.class-ranger { background: rgba(171, 212, 115, 0.15); color: #abd473; }
+.class-warlock { background: rgba(148, 130, 201, 0.15); color: #9482c9; }
+.class-druid { background: rgba(255, 125, 10, 0.15); color: #ff7d0a; }
+.class-shaman { background: rgba(0, 112, 222, 0.15); color: #0070de; }
+
+.hero-card.prestige-tier-1 {
+  border-color: #c0c0c0;
+  box-shadow: inset 0 0 10px rgba(192, 192, 192, 0.2), 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+.hero-card.prestige-tier-2 {
+  border-color: var(--wow-border-gold);
+  box-shadow: inset 0 0 14px rgba(255, 215, 0, 0.25), 0 4px 15px rgba(0, 0, 0, 0.7);
+}
+.prestige-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #f59e0b, #b45309);
+  color: #fff;
+  margin-left: 4px;
+  text-shadow: 1px 1px 1px #000;
+}
+.grade-badge {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  font-family: monospace;
+  padding: 0 3px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 3;
+}
+.grade-S { color: #ff8000; border: 1px solid #ff8000; }
+.grade-A { color: #a335ee; border: 1px solid #a335ee; }
+.grade-B { color: #0070dd; border: 1px solid #0070dd; }
+.grade-C { color: #1eff00; border: 1px solid #1eff00; }
+.grade-D { color: #9d9d9d; border: 1px solid #9d9d9d; }
+
+.inv-filter-btn.active {
+  border-color: var(--wow-border-gold) !important;
+  color: var(--wow-text-gold) !important;
+  background: rgba(179, 143, 41, 0.2) !important;
+}
 
 .hero-level {
   background: var(--wow-border-dark);
@@ -516,6 +563,18 @@ main {
 }
 .hero-card-model.class-paladin {
   background-image: url('assets/paladin.png');
+}
+.hero-card-model.class-ranger {
+  background-image: url('assets/ranger.png');
+}
+.hero-card-model.class-warlock {
+  background-image: url('assets/warlock.png');
+}
+.hero-card-model.class-druid {
+  background-image: url('assets/druid.png');
+}
+.hero-card-model.class-shaman {
+  background-image: url('assets/shaman.png');
 }
 
 /* Linear gradient overlay to make text pop and give deep vignette feel */

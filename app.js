@@ -46,6 +46,38 @@ const CLASS_DATABASE = {
         baseCrit: 3,
         classIcon: "🔨",
         statGrowth: { hp: 13, atk: 1.5, def: 1.5, crit: 0.5 }
+    },
+    Ranger: {
+        baseHp: 90,
+        baseAtk: 13,
+        baseDef: 5,
+        baseCrit: 9,
+        classIcon: "🏹",
+        statGrowth: { hp: 11, atk: 2.5, def: 1.1, crit: 1.3 }
+    },
+    Warlock: {
+        baseHp: 75,
+        baseAtk: 15,
+        baseDef: 3,
+        baseCrit: 7,
+        classIcon: "🔮",
+        statGrowth: { hp: 9, atk: 2.8, def: 0.7, crit: 1.0 }
+    },
+    Druid: {
+        baseHp: 100,
+        baseAtk: 9,
+        baseDef: 6,
+        baseCrit: 5,
+        classIcon: "🐾",
+        statGrowth: { hp: 12, atk: 1.8, def: 1.4, crit: 0.8 }
+    },
+    Shaman: {
+        baseHp: 95,
+        baseAtk: 11,
+        baseDef: 5,
+        baseCrit: 6,
+        classIcon: "⚡",
+        statGrowth: { hp: 11, atk: 2.1, def: 1.2, crit: 0.9 }
     }
 };
 
@@ -86,6 +118,34 @@ const SKILL_DATABASE = {
         { id: "blessing_of_kings", name: "Blessing of Kings", cost: 4, desc: "Boost all allies' Atk and Def by 15% for 3 turns.", icon: "👑", levelReq: 10 },
         { id: "consecration", name: "Consecration", cost: 4, desc: "Deal 0.5x Atk damage to enemy each turn for 3 turns.", icon: "🗺️", levelReq: 15 },
         { id: "lay_on_hands", name: "Lay on Hands", cost: 7, desc: "Fully heal the lowest HP ally (max once per combat).", icon: "🤝", levelReq: 20 }
+    ],
+    Ranger: [
+        { id: "aimed_shot", name: "Aimed Shot", cost: 4, desc: "Deal 1.7x Atk damage (+15% Crit chance).", icon: "🎯", levelReq: 1 },
+        { id: "hunters_mark", name: "Hunter's Mark", cost: 3, desc: "Deal 1.1x Atk and reduce enemy Def by 30% for 3 turns.", icon: "👁️", levelReq: 5 },
+        { id: "wolf_companion", name: "Beast Companion Strike", cost: 4, desc: "Deal 1.4x Atk and bleed enemy for 0.5x Atk for 3 turns.", icon: "🐺", levelReq: 10 },
+        { id: "trueshot_aura", name: "Trueshot Aura", cost: 4, desc: "Boost all allies' Atk and Def by 15% for 3 turns.", icon: "🏹", levelReq: 15 },
+        { id: "rapid_volley", name: "Rapid Volley", cost: 6, desc: "Unleash a storm of arrows for 2.5x Atk damage.", icon: "🌧️", levelReq: 20 }
+    ],
+    Warlock: [
+        { id: "shadow_bolt", name: "Shadow Bolt", cost: 4, desc: "Deal 1.75x Atk shadow damage.", icon: "🌑", levelReq: 1 },
+        { id: "corruption", name: "Corruption", cost: 3, desc: "Deal 0.9x Atk and apply 0.6x Atk shadow DoT for 3 turns.", icon: "💀", levelReq: 5 },
+        { id: "drain_life", name: "Drain Life", cost: 4, desc: "Deal 1.3x Atk damage and heal self for 0.8x Atk.", icon: "🩸", levelReq: 10 },
+        { id: "curse_of_weakness", name: "Curse of Weakness", cost: 3, desc: "Deal 1.1x Atk and reduce enemy Atk by 25% for 3 turns.", icon: "🔮", levelReq: 15 },
+        { id: "chaos_doom", name: "Chaos Doom", cost: 7, desc: "Deal 2.7x Atk shadowflame damage.", icon: "🔥", levelReq: 20 }
+    ],
+    Druid: [
+        { id: "moonfire", name: "Moonfire", cost: 3, desc: "Deal 1.2x Atk and apply 0.4x Atk lunar DoT for 3 turns.", icon: "🌙", levelReq: 1 },
+        { id: "rejuvenation", name: "Rejuvenation", cost: 3, desc: "Heal lowest HP ally for 0.7x Atk each turn for 3 turns.", icon: "🍃", levelReq: 5 },
+        { id: "dire_bear_form", name: "Dire Bear Form", cost: 4, desc: "Taunt enemy and increase Def by 65% for 2 turns.", icon: "🐻", levelReq: 10 },
+        { id: "ferocious_bite", name: "Ferocious Bite", cost: 5, desc: "Deal 2.1x Atk damage (+20% Crit chance).", icon: "🐾", levelReq: 15 },
+        { id: "tranquility", name: "Tranquility", cost: 6, desc: "Heal all allies in the group for 1.3x Druid Atk.", icon: "🌳", levelReq: 20 }
+    ],
+    Shaman: [
+        { id: "lightning_bolt", name: "Lightning Bolt", cost: 3, desc: "Deal 1.5x Atk nature damage.", icon: "⚡", levelReq: 1 },
+        { id: "healing_wave", name: "Healing Wave", cost: 4, desc: "Heal lowest HP ally for 1.7x Shaman Atk.", icon: "🌊", levelReq: 5 },
+        { id: "strength_totem", name: "Strength of Earth Totem", cost: 4, desc: "Boost all allies' Atk and Def by 15% for 3 turns.", icon: "🗿", levelReq: 10 },
+        { id: "windfury_totem", name: "Windfury Totem", cost: 5, desc: "Increase own Atk by 35% and Crit by 20% for 3 turns.", icon: "🌪️", levelReq: 15 },
+        { id: "chain_lightning", name: "Chain Lightning", cost: 6, desc: "Deal 2.3x Atk damage and heal lowest ally for 0.5x Atk.", icon: "🌩️", levelReq: 20 }
     ]
 };
 
@@ -413,10 +473,24 @@ const ITEM_DATABASE = {
     tough_leather_jerkin: { name: "Tough Leather Jerkin", type: "chest", rarity: 2, price: 400, stats: { def: 12, atk: 4 }, icon: "🥋" },
     core_leather_belt: { name: "Core Leather Belt", type: "waist", rarity: 3, price: 1500, stats: { def: 18, atk: 10, crit: 8 }, icon: "🎗️" },
 
-    // --- Alchemy Potions ---
+    // --- Alchemy Potions & Raid Flasks ---
     minor_healing_potion: { name: "Minor Healing Potion", type: "potion", rarity: 1, price: 30, desc: "Instantly restores 50 HP.", icon: "🧪" },
-    elixir_of_strength: { name: "Elixir of Might", type: "potion", rarity: 2, price: 120, desc: "Adds +5 Attack on next quest.", icon: "🧪" },
+    elixir_of_strength: { name: "Elixir of Might", type: "potion", rarity: 2, price: 120, desc: "Adds +10 Attack for 3 quests.", buff: { name: "Elixir of Might", atk: 10, quests: 3 }, icon: "🧪" },
     major_healing_potion: { name: "Major Healing Potion", type: "potion", rarity: 3, price: 600, desc: "Instantly restores 250 HP.", icon: "🧪" },
+    elixir_of_fortitude: { name: "Elixir of Fortitude", type: "potion", rarity: 2, price: 150, desc: "Adds +40 Max HP & +6 Def for 3 quests.", buff: { name: "Elixir of Fortitude", hp: 40, def: 6, quests: 3 }, icon: "🍶" },
+    elixir_of_ferocity: { name: "Elixir of Ferocity", type: "potion", rarity: 3, price: 350, desc: "Adds +15 Atk & +8% Crit for 3 quests.", buff: { name: "Elixir of Ferocity", atk: 15, crit: 8, quests: 3 }, icon: "🧪" },
+    flask_of_the_titans: { name: "Flask of the Titans", type: "potion", rarity: 4, price: 1800, desc: "Raid Flask: +200 Max HP & +25 Def for 5 quests.", buff: { name: "Flask of the Titans", hp: 200, def: 25, quests: 5 }, icon: "⚗️" },
+    flask_of_supreme_power: { name: "Flask of Supreme Power", type: "potion", rarity: 4, price: 2200, desc: "Raid Flask: +45 Atk & +12% Crit for 5 quests.", buff: { name: "Flask of Supreme Power", atk: 45, crit: 12, quests: 5 }, icon: "⚗️" },
+
+    // --- Enchanting Materials & Enchanter Recipes ---
+    arcane_dust: { name: "Arcane Dust", type: "material", rarity: 1, price: 25, icon: "✨" },
+    greater_magic_essence: { name: "Greater Magic Essence", type: "material", rarity: 2, price: 90, icon: "💫" },
+    void_crystal: { name: "Void Crystal", type: "material", rarity: 3, price: 350, icon: "🔮" },
+    minor_ward_ring: { name: "Runed Ward Band", type: "ring", rarity: 2, price: 240, stats: { def: 5, hp: 25, atk: 4 }, icon: "💍" },
+    enchanted_wanderer_cloak: { name: "Shroud of Arcane Warding", type: "back", rarity: 2, price: 420, stats: { def: 8, hp: 35, crit: 3 }, icon: "🦹" },
+    tome_of_arcane_brilliance: { name: "Tome of Arcane Brilliance", type: "offhand", rarity: 3, price: 950, stats: { atk: 24, hp: 45, crit: 5 }, icon: "📘" },
+    runeblade_of_the_void: { name: "Runeblade of the Void", type: "weapon", rarity: 3, price: 1800, stats: { atk: 42, crit: 7, hp: 50 }, icon: "🗡️" },
+    void_infused_talisman: { name: "Void-Infused Talisman", type: "trinket", rarity: 4, price: 4800, stats: { atk: 38, def: 15, hp: 110, crit: 8 }, icon: "🔮" },
 
     // --- Adventure Rare & Epic Drops ---
     ironpaws_champion_shield: { name: "Ironpaw's Champion Shield", type: "shield", rarity: 3, price: 800, stats: { def: 10, hp: 30 }, icon: "🛡️" },
@@ -1812,8 +1886,19 @@ const RECIPE_DATABASE = {
         { id: "minor_healing_potion", reqLvl: 1, exp: 10, cost: 10, mats: { spider_venom: 1 } },
         { id: "lucky_spider_charm", reqLvl: 2, exp: 20, cost: 50, mats: { spider_venom: 2 } },
         { id: "elixir_of_strength", reqLvl: 3, exp: 30, cost: 50, mats: { striped_runner_hoof: 1, spider_venom: 1 } },
+        { id: "elixir_of_fortitude", reqLvl: 4, exp: 45, cost: 80, mats: { medium_leather: 2, spider_venom: 1 } },
         { id: "essence_of_the_golem", reqLvl: 5, exp: 60, cost: 250, mats: { golem_core: 2 } },
-        { id: "major_healing_potion", reqLvl: 6, exp: 80, cost: 250, mats: { spider_venom: 3, golem_core: 1 } }
+        { id: "major_healing_potion", reqLvl: 6, exp: 80, cost: 250, mats: { spider_venom: 3, golem_core: 1 } },
+        { id: "elixir_of_ferocity", reqLvl: 7, exp: 100, cost: 200, mats: { raptor_claw: 2, spider_venom: 2 } },
+        { id: "flask_of_the_titans", reqLvl: 9, exp: 200, cost: 800, mats: { core_leather: 2, golem_core: 2 } },
+        { id: "flask_of_supreme_power", reqLvl: 10, exp: 250, cost: 1000, mats: { essence_of_fire: 2, fiery_core: 1 } }
+    ],
+    enchanter: [
+        { id: "minor_ward_ring", reqLvl: 1, exp: 20, cost: 50, mats: { arcane_dust: 2 } },
+        { id: "enchanted_wanderer_cloak", reqLvl: 3, exp: 40, cost: 120, mats: { arcane_dust: 4, linen_cloth: 2 } },
+        { id: "tome_of_arcane_brilliance", reqLvl: 5, exp: 75, cost: 300, mats: { arcane_dust: 4, greater_magic_essence: 2 } },
+        { id: "runeblade_of_the_void", reqLvl: 7, exp: 130, cost: 650, mats: { greater_magic_essence: 3, void_crystal: 1 } },
+        { id: "void_infused_talisman", reqLvl: 9, exp: 220, cost: 1500, mats: { void_crystal: 3, greater_magic_essence: 4 } }
     ]
 };
 
@@ -2073,11 +2158,15 @@ let gameState = {
         blacksmith: { lvl: 1, xp: 0, max_xp: 100 },
         tailor: { lvl: 1, xp: 0, max_xp: 100 },
         leatherworker: { lvl: 1, xp: 0, max_xp: 100 },
-        alchemist: { lvl: 1, xp: 0, max_xp: 100 }
+        alchemist: { lvl: 1, xp: 0, max_xp: 100 },
+        enchanter: { lvl: 1, xp: 0, max_xp: 100 }
     },
     activeQuests: [],
     customers: [],
     lastDispatch: null,
+    partyPresets: [],
+    itemMeta: {},
+    lastSavedAt: Date.now(),
     settings: {
         maxHeroes: 40,
         maxBagSlots: 30
@@ -2090,6 +2179,7 @@ let gameState = {
 let currentTab = "heroes";
 let currentProfession = "blacksmith";
 let currentZoneIndex = 0;
+let currentInventoryFilter = "all";
 
 // Dynamic selection placeholders for modals
 let selectedEquipSlot = null; // { heroId, slot }
@@ -2139,7 +2229,40 @@ function gameTick() {
 
 // Save & Load
 function saveGame() {
+    gameState.lastSavedAt = Date.now();
     localStorage.setItem("wow_warcrest_save", JSON.stringify(gameState));
+}
+
+function processOfflineProgress(elapsedSeconds) {
+    if (!elapsedSeconds || elapsedSeconds <= 2) return { completedCount: 0, customersAdded: 0 };
+
+    let completedCount = 0;
+    if (Array.isArray(gameState.activeQuests)) {
+        gameState.activeQuests.forEach(q => {
+            if (!q.isCompleted) {
+                q.durationRemaining = Math.max(0, q.durationRemaining - elapsedSeconds);
+                if (q.durationRemaining <= 0) {
+                    q.isCompleted = true;
+                    q.durationRemaining = 0;
+                    completedCount++;
+                }
+            }
+        });
+    }
+
+    let customersAdded = 0;
+    const potentialCustomers = Math.floor(elapsedSeconds / 25);
+    for (let i = 0; i < potentialCustomers && gameState.customers.length < 3; i++) {
+        const before = gameState.customers.length;
+        generateCustomerOffer();
+        if (gameState.customers.length > before) customersAdded++;
+    }
+
+    if (completedCount > 0 || customersAdded > 0) {
+        pushWastesChat("Guild Master", `⏳ Welcome back! Offline for ${elapsedSeconds}s: ${completedCount} quest(s) completed, ${customersAdded} new customer(s) arrived.`);
+    }
+
+    return { completedCount, customersAdded };
 }
 
 const ITEM_ID_MIGRATIONS = {
@@ -2172,6 +2295,7 @@ function loadGame() {
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
+            const savedTimestamp = parsed.lastSavedAt || null;
             // Deep merge states to safeguard modifications
             Object.assign(gameState, parsed);
             
@@ -2195,6 +2319,9 @@ function loadGame() {
                     if (!h.equipment) {
                         h.equipment = {};
                     }
+                    if (h.prestige === undefined) h.prestige = 0;
+                    if (h.activeBuff === undefined) h.activeBuff = null;
+                    if (!h.enchantments) h.enchantments = {};
                     const slots = ["head", "neck", "shoulders", "back", "chest", "hands", "waist", "legs", "boots", "ring", "trinket", "weapon", "secondary"];
                     slots.forEach(slot => {
                         if (h.equipment[slot] === undefined) {
@@ -2205,7 +2332,12 @@ function loadGame() {
                     });
                 });
             }
-            if (parsed.crafters) gameState.crafters = parsed.crafters;
+            if (parsed.crafters) {
+                gameState.crafters = parsed.crafters;
+                if (!gameState.crafters.enchanter) {
+                    gameState.crafters.enchanter = { lvl: 1, xp: 0, max_xp: 100 };
+                }
+            }
             if (parsed.activeQuests) gameState.activeQuests = parsed.activeQuests;
             
             // Migrate customers' requested items and names
@@ -2234,8 +2366,17 @@ function loadGame() {
                 });
             }
             if (parsed.lastDispatch) gameState.lastDispatch = parsed.lastDispatch;
+            gameState.partyPresets = Array.isArray(parsed.partyPresets) ? parsed.partyPresets : [];
+            gameState.itemMeta = parsed.itemMeta || {};
             gameState.defeatedEnemies = parsed.defeatedEnemies || [];
             gameState.enemyStats = parsed.enemyStats || {};
+
+            if (savedTimestamp) {
+                const elapsedSec = Math.floor((Date.now() - savedTimestamp) / 1000);
+                if (elapsedSec > 2) {
+                    processOfflineProgress(elapsedSec);
+                }
+            }
         } catch (e) {
             console.error("Save load corrupt. Initializing clean state.", e);
         }
@@ -2252,12 +2393,13 @@ function resetGame() {
 // --- STATE GETTERS & MODIFIERS ---
 
 function createHero(name, heroClass) {
-    const db = CLASS_DATABASE[heroClass];
+    const db = CLASS_DATABASE[heroClass] || CLASS_DATABASE.Warrior;
     return {
         id: "hero_" + Date.now() + Math.random().toString(36).substr(2, 4),
         name: name,
         class: heroClass,
         level: 1,
+        prestige: 0,
         xp: 0,
         max_xp: 100,
         hp: db.baseHp,
@@ -2280,6 +2422,8 @@ function createHero(name, heroClass) {
             weapon: null,
             secondary: null
         },
+        enchantments: {},
+        activeBuff: null,
         status: "Idle", // Idle, Questing, Dead
         activeQuestId: null,
         skills: [null, null, null, null, null]
@@ -2288,7 +2432,7 @@ function createHero(name, heroClass) {
 
 // Calculate a hero's current maximum Action Points (AP)
 function getHeroMaxAp(hero) {
-    let ap = 5 + Math.floor(hero.level / 5); // +1 AP every 5 levels (e.g. Lvl 5=6, Lvl 10=7... Lvl 60=17)
+    let ap = 5 + Math.floor(hero.level / 5) + ((hero.prestige || 0) * 2); // +1 AP every 5 levels, +2 AP per Prestige tier
     for (let slot in hero.equipment) {
         const itemId = hero.equipment[slot];
         if (itemId && ITEM_DATABASE[itemId]) {
@@ -2301,17 +2445,17 @@ function getHeroMaxAp(hero) {
     return ap;
 }
 
-// Re-calculate full stats including equipment
+// Re-calculate full stats including equipment, Prestige growth, itemMeta affixes, enchantments, and Alchemy buffs
 function getHeroFullStats(hero) {
-    const db = CLASS_DATABASE[hero.class];
-    // Base stats using growth formula
+    const db = CLASS_DATABASE[hero.class] || CLASS_DATABASE.Warrior;
+    const prestigeMult = 1 + ((hero.prestige || 0) * 0.25);
     const levelModifier = hero.level - 1;
-    let hp = db.baseHp + (db.statGrowth.hp * levelModifier);
-    let atk = db.baseAtk + (db.statGrowth.atk * levelModifier);
-    let def = db.baseDef + (db.statGrowth.def * levelModifier);
-    let crit = db.baseCrit + (db.statGrowth.crit * levelModifier);
+    let hp = (db.baseHp * prestigeMult) + (db.statGrowth.hp * prestigeMult * levelModifier);
+    let atk = (db.baseAtk * prestigeMult) + (db.statGrowth.atk * prestigeMult * levelModifier);
+    let def = (db.baseDef * prestigeMult) + (db.statGrowth.def * prestigeMult * levelModifier);
+    let crit = db.baseCrit + (db.statGrowth.crit * prestigeMult * levelModifier);
 
-    // Apply items
+    // Apply items, crafted itemMeta affixes, and slot enchantments
     for (let slot in hero.equipment) {
         const itemId = hero.equipment[slot];
         if (itemId && ITEM_DATABASE[itemId]) {
@@ -2322,7 +2466,29 @@ function getHeroFullStats(hero) {
                 if (item.stats.def) def += item.stats.def;
                 if (item.stats.crit) crit += item.stats.crit;
             }
+            const meta = gameState.itemMeta && gameState.itemMeta[itemId];
+            if (meta && meta.bonusStats) {
+                if (meta.bonusStats.hp) hp += meta.bonusStats.hp;
+                if (meta.bonusStats.atk) atk += meta.bonusStats.atk;
+                if (meta.bonusStats.def) def += meta.bonusStats.def;
+                if (meta.bonusStats.crit) crit += meta.bonusStats.crit;
+            }
+            const ench = hero.enchantments && hero.enchantments[slot];
+            if (ench) {
+                if (ench.hp) hp += ench.hp;
+                if (ench.atk) atk += ench.atk;
+                if (ench.def) def += ench.def;
+                if (ench.crit) crit += ench.crit;
+            }
         }
+    }
+
+    // Apply active Alchemy Elixir / Flask buff
+    if (hero.activeBuff && hero.activeBuff.questsRemaining > 0) {
+        if (hero.activeBuff.hp) hp += hero.activeBuff.hp;
+        if (hero.activeBuff.atk) atk += hero.activeBuff.atk;
+        if (hero.activeBuff.def) def += hero.activeBuff.def;
+        if (hero.activeBuff.crit) crit += hero.activeBuff.crit;
     }
 
     return {
@@ -2331,6 +2497,82 @@ function getHeroFullStats(hero) {
         def: Math.round(def),
         crit: Math.round(crit)
     };
+}
+
+function prestigeHero(heroId) {
+    const hero = gameState.heroes.find(h => h.id === heroId);
+    if (!hero) return false;
+    if (hero.status !== "Idle") {
+        alert("Hero must be Idle in the guild hall to Ascend!");
+        return false;
+    }
+    if (hero.level < 60) {
+        alert("Hero must reach Level 60 before Ascending (Prestige)!");
+        return false;
+    }
+    const maxPrestige = 5;
+    if ((hero.prestige || 0) >= maxPrestige) {
+        alert(`${hero.name} has already reached maximum Prestige Tier ${maxPrestige}!`);
+        return false;
+    }
+
+    hero.prestige = (hero.prestige || 0) + 1;
+    hero.level = 1;
+    hero.xp = 0;
+    hero.max_xp = 100;
+    const fullStats = getHeroFullStats(hero);
+    hero.max_hp = fullStats.hp;
+    hero.hp = fullStats.hp;
+
+    saveGame();
+    renderHeroes();
+    pushWastesChat("Guild Master", `🌟 ASCENSION! ${hero.name} has ascended to Prestige Tier ${hero.prestige} (+${hero.prestige * 25}% stat scaling & +${hero.prestige * 2} Max AP)!`);
+    return true;
+}
+
+function restAllIdleHeroes() {
+    let deadHeroes = [];
+    let injuredHeroes = [];
+    let totalCost = 0;
+
+    gameState.heroes.forEach(h => {
+        const maxHp = getHeroFullStats(h).hp;
+        if (h.status === "Dead") {
+            const cost = h.level * 50;
+            deadHeroes.push({ hero: h, maxHp, cost });
+            totalCost += cost;
+        } else if (h.status === "Idle" && h.hp < maxHp) {
+            const missingHp = maxHp - h.hp;
+            const cost = Math.max(5, Math.ceil(missingHp * 0.25));
+            injuredHeroes.push({ hero: h, maxHp, cost });
+            totalCost += cost;
+        }
+    });
+
+    if (deadHeroes.length === 0 && injuredHeroes.length === 0) {
+        pushWastesChat("Tavern Keeper", "All available heroes are already at full health and ready for battle!");
+        return false;
+    }
+
+    if (gameState.gold < totalCost) {
+        alert(`Not enough gold to rest and resurrect all heroes! Need ${parseCoins(totalCost)}.`);
+        return false;
+    }
+
+    addGold(-totalCost);
+    deadHeroes.forEach(({ hero, maxHp }) => {
+        hero.status = "Idle";
+        hero.hp = maxHp;
+    });
+    injuredHeroes.forEach(({ hero, maxHp }) => {
+        hero.hp = maxHp;
+    });
+
+    saveGame();
+    renderHeroes();
+    renderRepeatButton();
+    pushWastesChat("Tavern Keeper", `🍻 Tavern Rest complete! Resurrected ${deadHeroes.length} and healed ${injuredHeroes.length} hero(es) for ${parseCoins(totalCost)}.`);
+    return true;
 }
 
 function getInventoryFilledSlots() {
@@ -2596,7 +2838,11 @@ function resolveCombat(quest) {
             if (skill.id === "basic_attack" || skill.id === "heroic_strike" || skill.id === "sunder_armor" || skill.id === "shield_slam" ||
                 skill.id === "fireball" || skill.id === "frostbolt" || skill.id === "pyroblast" ||
                 skill.id === "sinister_strike" || skill.id === "expose_armor" || skill.id === "eviscerate" ||
-                skill.id === "mind_blast" || skill.id === "judgement_of_light" || skill.id === "consecration") {
+                skill.id === "mind_blast" || skill.id === "judgement_of_light" || skill.id === "consecration" ||
+                skill.id === "aimed_shot" || skill.id === "hunters_mark" || skill.id === "wolf_companion" || skill.id === "rapid_volley" ||
+                skill.id === "shadow_bolt" || skill.id === "corruption" || skill.id === "drain_life" || skill.id === "chaos_doom" ||
+                skill.id === "moonfire" || skill.id === "ferocious_bite" ||
+                skill.id === "lightning_bolt" || skill.id === "chain_lightning") {
                 
                 // Damage Dealing Skill
                 let mult = 1.0;
@@ -2637,6 +2883,18 @@ function resolveCombat(quest) {
                 else if (skill.id === "mind_blast") mult = 1.5;
                 else if (skill.id === "judgement_of_light") mult = 1.1;
                 else if (skill.id === "consecration") mult = 0.0; // Consecration is dot only
+                else if (skill.id === "aimed_shot") { mult = 1.6; addCritChance = 15; }
+                else if (skill.id === "hunters_mark") mult = 1.0;
+                else if (skill.id === "wolf_companion") mult = 1.3;
+                else if (skill.id === "rapid_volley") mult = 2.4;
+                else if (skill.id === "shadow_bolt") mult = 1.7;
+                else if (skill.id === "corruption") mult = 0.8;
+                else if (skill.id === "drain_life") mult = 1.3;
+                else if (skill.id === "chaos_doom") mult = 2.9;
+                else if (skill.id === "moonfire") mult = 1.2;
+                else if (skill.id === "ferocious_bite") { mult = 2.1; addCritChance = 20; }
+                else if (skill.id === "lightning_bolt") mult = 1.5;
+                else if (skill.id === "chain_lightning") mult = 2.3;
 
                 // Calculate Net Damage
                 let enemyCurrentDef = enemy.def * enemyBuffs.def;
@@ -2664,26 +2922,36 @@ function resolveCombat(quest) {
                     }
 
                     // Secondary skill effects
-                    if (skill.id === "sunder_armor") {
+                    if (skill.id === "sunder_armor" || skill.id === "hunters_mark") {
                         enemyDebuffs.sunder = 3;
-                        logEvent(`Turn ${turn}: ${enemy.name} is afflicted with Sunder Armor! (-30% Defense for 3 turns).`);
+                        logEvent(`Turn ${turn}: ${enemy.name} is afflicted with ${skill.name}! (-30% Defense for 3 turns).`);
                     } else if (skill.id === "expose_armor") {
                         enemyDebuffs.expose = 2;
                         logEvent(`Turn ${turn}: ${enemy.name} is afflicted with Expose Armor! (-45% Defense for 2 turns).`);
                     } else if (skill.id === "frostbolt") {
                         enemyDebuffs.atk_debuff = 2;
                         logEvent(`Turn ${turn}: ${enemy.name} is chilled by Frostbolt! (-25% Attack for 2 turns).`);
-                    } else if (skill.id === "judgement_of_light") {
+                    } else if (skill.id === "judgement_of_light" || skill.id === "chain_lightning") {
                         const lowAlly = getLowestHpAlly(activeHeroes);
                         if (lowAlly) {
                             const heal = Math.round(finalAtk * 0.5);
                             lowAlly.currentHp = Math.min(lowAlly.stats.hp, lowAlly.currentHp + heal);
-                            logEvent(`Turn ${turn}: Judgement of Light restores +${heal} HP to ${lowAlly.obj.name}.`, null, lowAlly.obj.id);
+                            logEvent(`Turn ${turn}: ${skill.name} restores +${heal} HP to ${lowAlly.obj.name}.`, null, lowAlly.obj.id);
                         }
                     } else if (skill.id === "consecration") {
                         enemyDebuffs.consecration = Math.round(finalAtk * 0.5);
                         enemyDebuffs.consecration_duration = 3;
                         logEvent(`Turn ${turn}: ${h.obj.name} consecrates the ground, dealing holy fire DOT to ${enemy.name} for 3 turns.`);
+                    } else if (skill.id === "wolf_companion" || skill.id === "corruption" || skill.id === "moonfire") {
+                        const dotMult = skill.id === "corruption" ? 0.65 : 0.4;
+                        const dotDur = skill.id === "moonfire" ? 2 : 3;
+                        enemyDebuffs.consecration = Math.round(finalAtk * dotMult);
+                        enemyDebuffs.consecration_duration = dotDur;
+                        logEvent(`Turn ${turn}: ${skill.name} afflicts ${enemy.name} with periodic damage (${enemyDebuffs.consecration}/turn for ${dotDur} turns).`);
+                    } else if (skill.id === "drain_life") {
+                        const selfHeal = Math.max(1, Math.round(dmg * 0.8));
+                        h.currentHp = Math.min(h.stats.hp, h.currentHp + selfHeal);
+                        logEvent(`Turn ${turn}: ${h.obj.name} siphons +${selfHeal} HP with Drain Life!`, null, h.obj.id);
                     }
                 }
             } 
@@ -2696,10 +2964,30 @@ function resolveCombat(quest) {
                 h.buffs.taunt = 1;
                 logEvent(`Turn ${turn}: ${h.obj.name} taunts ${enemy.name}, drawing all threat weight!`, null, h.obj.id);
             }
+            else if (skill.id === "dire_bear_form") {
+                h.buffs.def_mult = Math.max(h.buffs.def_mult, 1.5);
+                h.buffs.def_duration = Math.max(h.buffs.def_duration || 0, 3);
+                h.buffs.taunt = 2;
+                logEvent(`Turn ${turn}: ${h.obj.name} shifts into Dire Bear Form! (+50% Defense & Taunt for 2 turns).`, null, h.obj.id);
+            }
             else if (skill.id === "amplify_magic") {
                 h.buffs.atk = 0.45;
                 h.buffs.atk_duration = 3;
                 logEvent(`Turn ${turn}: ${h.obj.name} casts Amplify Magic! (+45% Spell Damage for 3 turns).`, null, h.obj.id);
+            }
+            else if (skill.id === "trueshot_aura") {
+                activeHeroes.forEach(ally => {
+                    if (ally.currentHp > 0) {
+                        ally.buffs.atk = Math.max(ally.buffs.atk, 0.2);
+                        ally.buffs.atk_duration = Math.max(ally.buffs.atk_duration || 0, 3);
+                    }
+                });
+                logEvent(`Turn ${turn}: ${h.obj.name} activates Trueshot Aura! (+20% Party Attack for 3 turns).`, null, "all");
+            }
+            else if (skill.id === "curse_of_weakness") {
+                enemyDebuffs.atk_debuff = 3;
+                enemyDebuffs.sunder = 3;
+                logEvent(`Turn ${turn}: ${h.obj.name} curses ${enemy.name} with Weakness! (-25% Atk & -30% Def for 3 turns).`);
             }
             else if (skill.id === "blink") {
                 h.buffs.evasion = 0.3;
@@ -2710,26 +2998,28 @@ function resolveCombat(quest) {
                 h.feint = 3;
                 logEvent(`Turn ${turn}: ${h.obj.name} uses Feint to drop all aggression.`);
             }
-            else if (skill.id === "adrenaline_rush") {
-                h.buffs.atk = 0.3;
-                h.buffs.crit = 25;
+            else if (skill.id === "adrenaline_rush" || skill.id === "windfury_totem") {
+                h.buffs.atk = skill.id === "windfury_totem" ? 0.35 : 0.3;
+                h.buffs.crit = skill.id === "windfury_totem" ? 20 : 25;
                 h.buffs.atk_duration = 3;
-                logEvent(`Turn ${turn}: ${h.obj.name} triggers Adrenaline Rush! (+30% Attack, +25% Crit chance for 3 turns).`, null, h.obj.id);
+                logEvent(`Turn ${turn}: ${h.obj.name} triggers ${skill.name}! (+${Math.round(h.buffs.atk * 100)}% Attack, +${h.buffs.crit}% Crit for 3 turns).`, null, h.obj.id);
             }
-            else if (skill.id === "flash_heal") {
+            else if (skill.id === "flash_heal" || skill.id === "healing_wave") {
                 const lowAlly = getLowestHpAlly(activeHeroes);
                 if (lowAlly) {
-                    const heal = Math.round(finalAtk * 1.8);
+                    const healMult = skill.id === "healing_wave" ? 1.7 : 1.8;
+                    const heal = Math.round(finalAtk * healMult);
                     lowAlly.currentHp = Math.min(lowAlly.stats.hp, lowAlly.currentHp + heal);
-                    logEvent(`Turn ${turn}: ${h.obj.name} casts Flash Heal on ${lowAlly.obj.name}, restoring +${heal} HP.`, null, lowAlly.obj.id);
+                    logEvent(`Turn ${turn}: ${h.obj.name} casts ${skill.name} on ${lowAlly.obj.name}, restoring +${heal} HP.`, null, lowAlly.obj.id);
                 }
             }
-            else if (skill.id === "renew") {
+            else if (skill.id === "renew" || skill.id === "rejuvenation") {
                 const lowAlly = getLowestHpAlly(activeHeroes);
                 if (lowAlly) {
-                    lowAlly.buffs.renew = Math.round(finalAtk * 0.6);
+                    const hotMult = skill.id === "rejuvenation" ? 0.75 : 0.6;
+                    lowAlly.buffs.renew = Math.round(finalAtk * hotMult);
                     lowAlly.buffs.renew_duration = 3;
-                    logEvent(`Turn ${turn}: ${h.obj.name} applies Renew on ${lowAlly.obj.name} (healing +${lowAlly.buffs.renew} HP/turn for 3 turns).`, null, lowAlly.obj.id);
+                    logEvent(`Turn ${turn}: ${h.obj.name} applies ${skill.name} on ${lowAlly.obj.name} (healing +${lowAlly.buffs.renew} HP/turn for 3 turns).`, null, lowAlly.obj.id);
                 }
             }
             else if (skill.id === "power_word_shield") {
@@ -2740,14 +3030,15 @@ function resolveCombat(quest) {
                     logEvent(`Turn ${turn}: ${h.obj.name} wraps ${lowAlly.obj.name} in Power Word: Shield! Absorbs up to ${lowAlly.buffs.shield} damage for 2 turns.`, null, lowAlly.obj.id);
                 }
             }
-            else if (skill.id === "prayer_of_healing") {
-                const heal = Math.round(finalAtk * 1.0);
+            else if (skill.id === "prayer_of_healing" || skill.id === "tranquility") {
+                const healMult = skill.id === "tranquility" ? 1.3 : 1.0;
+                const heal = Math.round(finalAtk * healMult);
                 activeHeroes.forEach(ally => {
                     if (ally.currentHp > 0) {
                         ally.currentHp = Math.min(ally.stats.hp, ally.currentHp + heal);
                     }
                 });
-                logEvent(`Turn ${turn}: ${h.obj.name} casts Prayer of Healing! Restores +${heal} HP to all party members.`, null, "all");
+                logEvent(`Turn ${turn}: ${h.obj.name} casts ${skill.name}! Restores +${heal} HP to all party members.`, null, "all");
             }
             else if (skill.id === "holy_light") {
                 const lowAlly = getLowestHpAlly(activeHeroes);
@@ -2757,14 +3048,14 @@ function resolveCombat(quest) {
                     logEvent(`Turn ${turn}: ${h.obj.name} channels Holy Light on ${lowAlly.obj.name} for +${heal} HP.`, null, lowAlly.obj.id);
                 }
             }
-            else if (skill.id === "blessing_of_kings") {
+            else if (skill.id === "blessing_of_kings" || skill.id === "strength_totem") {
                 activeHeroes.forEach(ally => {
                     if (ally.currentHp > 0) {
                         ally.buffs.kings = true;
                         ally.buffs.kings_duration = 3;
                     }
                 });
-                logEvent(`Turn ${turn}: ${h.obj.name} casts Blessing of Kings on the group! (+15% stats for 3 turns).`, null, "all");
+                logEvent(`Turn ${turn}: ${h.obj.name} casts ${skill.name} on the group! (+15% stats for 3 turns).`, null, "all");
             }
             else if (skill.id === "lay_on_hands") {
                 const lowAlly = getLowestHpAlly(activeHeroes);
@@ -2805,6 +3096,8 @@ function resolveCombat(quest) {
                         let weight = 10;
                         if (h.obj.class === "Warrior") weight = 80;
                         else if (h.obj.class === "Paladin") weight = 50;
+                        else if (h.obj.class === "Druid") weight = 45;
+                        else if (h.obj.class === "Shaman") weight = 25;
                         else if (h.obj.class === "Rogue") {
                             weight = h.feint > 0 ? 1 : 15;
                         }
@@ -3160,9 +3453,84 @@ function reviveHero(heroId) {
     pushBarrensChat("Guild Master", `${hero.name} has been resurrected and is ready for adventure.`);
 }
 
-// --- CRAFTING LOGIC ---
+// --- CRAFTING LOGIC (WITH GRADES, AFFIXES & DISENCHANTING) ---
+
+const ITEM_PREFIXES = [
+    { name: "Fiery", stats: { atk: 4 } },
+    { name: "Savage", stats: { atk: 3, crit: 2 } },
+    { name: "Stalwart", stats: { def: 3, hp: 12 } },
+    { name: "Arcane", stats: { atk: 5 } }
+];
+
+const ITEM_SUFFIXES = [
+    { name: "of the Bear", stats: { hp: 18, def: 3 } },
+    { name: "of the Tiger", stats: { atk: 4, crit: 2 } },
+    { name: "of the Owl", stats: { atk: 3, hp: 12 } },
+    { name: "of the Whale", stats: { hp: 25, def: 2 } }
+];
+
+function rollCraftedItemQuality(recipeId, profession) {
+    const item = ITEM_DATABASE[recipeId];
+    const recipe = RECIPE_DATABASE[profession] && RECIPE_DATABASE[profession].find(r => r.id === recipeId);
+    if (!item || item.type === "material" || item.type === "potion") return null;
+
+    const crafterLvl = (gameState.crafters[profession] && gameState.crafters[profession].lvl) || 1;
+    const reqLvl = recipe ? recipe.reqLvl : 1;
+    const levelAdvantage = Math.max(0, crafterLvl - reqLvl);
+
+    // Score 0..100
+    const score = Math.random() * 75 + (levelAdvantage * 6);
+    let grade = "C";
+    let statMult = 0.05;
+    if (score >= 78) { grade = "S"; statMult = 0.35; }
+    else if (score >= 58) { grade = "A"; statMult = 0.22; }
+    else if (score >= 38) { grade = "B"; statMult = 0.12; }
+    else if (score >= 18) { grade = "C"; statMult = 0.05; }
+    else { grade = "D"; statMult = 0.0; }
+
+    const bonusStats = {};
+    if (item.stats && statMult > 0) {
+        for (let k in item.stats) {
+            bonusStats[k] = Math.max(1, Math.round(item.stats[k] * statMult));
+        }
+    }
+
+    let prefix = null;
+    let suffix = null;
+    if (grade === "S" || grade === "A" || Math.random() < 0.35) {
+        const p = ITEM_PREFIXES[Math.floor(Math.random() * ITEM_PREFIXES.length)];
+        prefix = p.name;
+        for (let k in p.stats) {
+            bonusStats[k] = (bonusStats[k] || 0) + p.stats[k];
+        }
+    }
+    if (grade === "S" || Math.random() < 0.35) {
+        const s = ITEM_SUFFIXES[Math.floor(Math.random() * ITEM_SUFFIXES.length)];
+        suffix = s.name;
+        for (let k in s.stats) {
+            bonusStats[k] = (bonusStats[k] || 0) + s.stats[k];
+        }
+    }
+
+    const gradeOrder = { D: 1, C: 2, B: 3, A: 4, S: 5 };
+    const existing = gameState.itemMeta && gameState.itemMeta[recipeId];
+    const metaObj = {
+        grade,
+        prefix,
+        suffix,
+        bonusStats
+    };
+
+    if (!gameState.itemMeta) gameState.itemMeta = {};
+    if (!existing || (gradeOrder[grade] >= (gradeOrder[existing.grade] || 0))) {
+        gameState.itemMeta[recipeId] = metaObj;
+    }
+
+    return metaObj;
+}
 
 function craftItem(recipeId, profession) {
+    if (!RECIPE_DATABASE[profession]) return;
     const recipe = RECIPE_DATABASE[profession].find(r => r.id === recipeId);
     const item = ITEM_DATABASE[recipeId];
 
@@ -3208,6 +3576,13 @@ function craftItem(recipeId, profession) {
         return;
     }
 
+    // Roll Merchant-RPG style Crafting Grade & Affix for equipment
+    const rolledMeta = rollCraftedItemQuality(recipeId, profession);
+    if (rolledMeta) {
+        const affixLabel = `${rolledMeta.prefix ? rolledMeta.prefix + " " : ""}[${item.name}]${rolledMeta.suffix ? " " + rolledMeta.suffix : ""}`;
+        pushWastesChat("Forge", `⚒️ Crafted Grade [${rolledMeta.grade}] ${affixLabel}!`);
+    }
+
     // Award profession XP
     crafter.xp += recipe.exp;
     if (crafter.xp >= crafter.max_xp) {
@@ -3220,6 +3595,60 @@ function craftItem(recipeId, profession) {
     // Play successful click response
     renderCraftingRecipes();
     renderInventory();
+}
+
+function disenchantItem(itemId) {
+    const item = ITEM_DATABASE[itemId];
+    if (!item || item.type === "material" || item.type === "potion") return false;
+    const owned = gameState.inventory[itemId] || 0;
+    if (owned < 1) return false;
+
+    addInventory(itemId, -1);
+
+    const rarity = item.rarity || 1;
+    let yielded = [];
+    if (rarity <= 1) {
+        addInventory("arcane_dust", 2);
+        yielded.push("2x [Arcane Dust]");
+    } else if (rarity === 2) {
+        addInventory("arcane_dust", 2);
+        addInventory("greater_magic_essence", 1);
+        yielded.push("2x [Arcane Dust]", "1x [Greater Magic Essence]");
+    } else if (rarity === 3) {
+        addInventory("greater_magic_essence", 2);
+        addInventory("void_crystal", 1);
+        yielded.push("2x [Greater Magic Essence]", "1x [Void Crystal]");
+    } else {
+        addInventory("void_crystal", 3);
+        addInventory("greater_magic_essence", 2);
+        yielded.push("3x [Void Crystal]", "2x [Greater Magic Essence]");
+    }
+
+    if (!gameState.crafters.enchanter) {
+        gameState.crafters.enchanter = { lvl: 1, xp: 0, max_xp: 100 };
+    }
+    const enchanter = gameState.crafters.enchanter;
+    enchanter.xp += rarity * 15;
+    if (enchanter.xp >= enchanter.max_xp) {
+        enchanter.lvl += 1;
+        enchanter.xp -= enchanter.max_xp;
+        enchanter.max_xp = enchanter.lvl * 120;
+        pushWastesChat("Profession Logs", `Congratulations! Your ENCHANTER has reached Level ${enchanter.lvl}!`);
+    }
+
+    renderInventory();
+    renderHeaderStats();
+    pushWastesChat("Enchanter", `✨ Disenchanted [${item.name}] into ${yielded.join(", ")}.`);
+    return true;
+}
+
+function disenchantSelectedItem() {
+    if (!selectedInventorySlot) return false;
+    const ok = disenchantItem(selectedInventorySlot);
+    if (ok) {
+        closeModal("modal-item-details");
+    }
+    return ok;
 }
 
 // --- MARKET / NPC SALES LOGIC ---
@@ -3387,9 +3816,17 @@ function renderHeroes() {
     gameState.heroes.forEach(hero => {
         const stats = getHeroFullStats(hero);
         const card = document.createElement("div");
-        card.className = "hero-card";
+        const prestigeTier = hero.prestige || 0;
+        card.className = "hero-card" + (prestigeTier >= 2 ? " prestige-tier-2" : (prestigeTier === 1 ? " prestige-tier-1" : ""));
 
         const xpPct = (hero.xp / hero.max_xp) * 100;
+        const classInfo = CLASS_DATABASE[hero.class] || CLASS_DATABASE.Warrior;
+        const prestigeBadgeHtml = prestigeTier > 0
+            ? `<span class="prestige-badge" title="+${prestigeTier * 25}% Stat Scaling & +${prestigeTier * 2} AP">★ P${prestigeTier}</span>`
+            : "";
+        const buffBadgeHtml = (hero.activeBuff && hero.activeBuff.questsRemaining > 0)
+            ? `<div style="font-size:0.7rem; color:#4ade80; margin-top:2px;">🧪 ${hero.activeBuff.name} (${hero.activeBuff.questsRemaining}q)</div>`
+            : "";
         
         let actionsHtml = "";
         if (hero.status === "Dead") {
@@ -3401,9 +3838,13 @@ function renderHeroes() {
         } else if (hero.status === "Questing") {
             actionsHtml = `<button class="wow-button secondary" disabled style="width:100%;">Adventuring...</button>`;
         } else {
+            const ascendBtn = (hero.level >= 60 && prestigeTier < 5)
+                ? `<button class="wow-button" style="background:linear-gradient(135deg,#9333ea,#fbbf24); flex:1; margin-left:4px;" onclick="prestigeHero('${hero.id}')" title="Ascend to Prestige Tier ${prestigeTier + 1}">🌟 Ascend</button>`
+                : "";
             actionsHtml = `
                 <button class="wow-button secondary" onclick="openEquipModal('${hero.id}')" style="flex:1; margin-right:4px;">Equip Gear</button>
                 <button class="wow-button secondary" onclick="openSkillsModal('${hero.id}')" style="flex:1; margin-left:4px;">📜 Skills</button>
+                ${ascendBtn}
             `;
         }
 
@@ -3422,8 +3863,9 @@ function renderHeroes() {
         card.innerHTML = `
             <div class="hero-header">
                 <div class="hero-name-class">
-                    <h3>${hero.name}</h3>
-                    <span class="hero-class-tag class-${hero.class.toLowerCase()}">${CLASS_DATABASE[hero.class].classIcon} ${hero.class}</span>
+                    <h3>${hero.name} ${prestigeBadgeHtml}</h3>
+                    <span class="hero-class-tag class-${hero.class.toLowerCase()}">${classInfo.classIcon} ${hero.class}</span>
+                    ${buffBadgeHtml}
                 </div>
                 <div class="hero-level">${hero.level}</div>
             </div>
@@ -3454,7 +3896,7 @@ function renderHeroes() {
         container.appendChild(card);
     });
 
-    // Hire Hero Card (limit to 5)
+    // Hire Hero Card
     if (gameState.heroes.length < gameState.settings.maxHeroes) {
         const hireCost = gameState.heroes.length * 100; // 1 Silver, 2 Silver, 3 Silver...
         const hireCard = document.createElement("div");
@@ -4041,36 +4483,52 @@ function switchProfession(prof) {
     currentProfession = prof;
     
     // Toggle active state of profession select buttons
-    const professions = ["blacksmith", "tailor", "leatherworker", "alchemist"];
+    const professions = ["blacksmith", "tailor", "leatherworker", "alchemist", "enchanter"];
     professions.forEach(p => {
-        document.getElementById(`prof-btn-${p}`).classList.remove("active");
+        const btn = document.getElementById(`prof-btn-${p}`);
+        if (btn) btn.classList.remove("active");
     });
-    document.getElementById(`prof-btn-${prof}`).classList.add("active");
+    const activeBtn = document.getElementById(`prof-btn-${prof}`);
+    if (activeBtn) activeBtn.classList.add("active");
 
-    const profName = { blacksmith: "Blacksmithing", tailor: "Tailoring", leatherworker: "Leatherworking", alchemist: "Alchemy" };
-    document.getElementById("current-profession-name").innerText = `${profName[prof]} Recipes`;
+    const profName = {
+        blacksmith: "Blacksmithing",
+        tailor: "Tailoring",
+        leatherworker: "Leatherworking",
+        alchemist: "Alchemy",
+        enchanter: "Enchanting"
+    };
+    document.getElementById("current-profession-name").innerText = `${profName[prof] || "Crafting"} Recipes`;
 
     renderCraftingRecipes();
     renderCrafterProgress();
 }
 
 function renderCrafterProgress() {
+    if (!gameState.crafters.enchanter) {
+        gameState.crafters.enchanter = { lvl: 1, xp: 0, max_xp: 100 };
+    }
     const crafter = gameState.crafters[currentProfession];
-    document.getElementById(`prof-lvl-${currentProfession}`).innerText = crafter.lvl;
+    if (!crafter) return;
+    const lvlEl = document.getElementById(`prof-lvl-${currentProfession}`);
+    const xpBarEl = document.getElementById(`prof-xp-${currentProfession}`);
+    const xpTxtEl = document.getElementById(`prof-xp-txt-${currentProfession}`);
+    if (lvlEl) lvlEl.innerText = crafter.lvl;
     
     const pct = (crafter.xp / crafter.max_xp) * 100;
-    document.getElementById(`prof-xp-${currentProfession}`).style.width = `${pct}%`;
-    document.getElementById(`prof-xp-txt-${currentProfession}`).innerText = `${crafter.xp} / ${crafter.max_xp} XP`;
+    if (xpBarEl) xpBarEl.style.width = `${pct}%`;
+    if (xpTxtEl) xpTxtEl.innerText = `${crafter.xp} / ${crafter.max_xp} XP`;
 }
 
 function renderCraftingRecipes() {
     const container = document.getElementById("recipe-list-container");
     container.innerHTML = "";
 
-    const recipes = RECIPE_DATABASE[currentProfession];
+    const recipes = RECIPE_DATABASE[currentProfession] || [];
     
     recipes.forEach(recipe => {
         const item = ITEM_DATABASE[recipe.id];
+        if (!item) return;
         const card = document.createElement("div");
         card.className = "recipe-card";
 
@@ -4093,7 +4551,7 @@ function renderCraftingRecipes() {
 
         if (gameState.gold < recipe.cost) canCraft = false;
         
-        const crafter = gameState.crafters[currentProfession];
+        const crafter = gameState.crafters[currentProfession] || { lvl: 1 };
         const levelMet = crafter.lvl >= recipe.reqLvl;
 
         let actionBtn = "";
@@ -4112,6 +4570,8 @@ function renderCraftingRecipes() {
                 list.push(`+${item.stats[statName]} ${statName.toUpperCase()}`);
             }
             statsHtml = `<span style="font-size:0.75rem; color:var(--rarity-uncommon); font-weight:700;">(${list.join(", ")})</span>`;
+        } else if (item.desc) {
+            statsHtml = `<span style="font-size:0.72rem; color:#a5b4fc;">${item.desc}</span>`;
         }
 
         card.innerHTML = `
@@ -4137,23 +4597,110 @@ function renderCraftingRecipes() {
     renderCrafterProgress();
 }
 
+// --- INVENTORY UPGRADES, FILTERS & BATCH SELL ---
+
+function getBagUpgradeCost() {
+    const currentSlots = (gameState.settings && gameState.settings.maxBagSlots) || 30;
+    const step = Math.max(0, Math.floor((currentSlots - 30) / 10));
+    return 500 + (step * 500);
+}
+
+function upgradeBagSlots() {
+    if (!gameState.settings) gameState.settings = { maxHeroes: 40, maxBagSlots: 30 };
+    if (gameState.settings.maxBagSlots >= 100) {
+        alert("Your guild bank bags have reached maximum capacity (100 slots)!");
+        return false;
+    }
+    const cost = getBagUpgradeCost();
+    if (gameState.gold < cost) {
+        alert(`Not enough gold to upgrade bag slots! Need ${parseCoins(cost)}.`);
+        return false;
+    }
+
+    addGold(-cost);
+    gameState.settings.maxBagSlots += 10;
+    saveGame();
+    renderInventory();
+    renderHeaderStats();
+    pushWastesChat("Guild Bank", `🎒 Upgraded Guild Bags to ${gameState.settings.maxBagSlots} slots for ${parseCoins(cost)}!`);
+    return true;
+}
+
+function setInventoryFilter(filter) {
+    currentInventoryFilter = filter || "all";
+    const filters = ["all", "gear", "material", "consumable"];
+    filters.forEach(f => {
+        const btn = document.getElementById(`inv-filter-${f}`);
+        if (btn) {
+            if (f === currentInventoryFilter) btn.classList.add("active");
+            else btn.classList.remove("active");
+        }
+    });
+    renderInventory();
+}
+
+function batchSellJunk() {
+    let totalCopper = 0;
+    let totalSoldCount = 0;
+
+    for (let itemId in gameState.inventory) {
+        const qty = gameState.inventory[itemId];
+        if (!qty || qty <= 0) continue;
+        const item = ITEM_DATABASE[itemId];
+        if (!item) continue;
+
+        const isPoorJunk = item.rarity === 0;
+        const isCommonGear = item.rarity === 1 && item.type !== "material" && item.type !== "potion";
+        if (isPoorJunk || isCommonGear) {
+            totalCopper += item.price * qty;
+            totalSoldCount += qty;
+            delete gameState.inventory[itemId];
+        }
+    }
+
+    if (totalSoldCount === 0) {
+        pushWastesChat("Shop", "No Common gear or Junk items found in your bags to batch sell.");
+        return 0;
+    }
+
+    addGold(totalCopper);
+    saveGame();
+    renderInventory();
+    renderHeaderStats();
+    pushWastesChat("Shop", `🪙 Batch sold ${totalSoldCount} Common/Junk item(s) for ${parseCoins(totalCopper)}!`);
+    return totalSoldCount;
+}
+
 // Inventory Screen
 function renderInventory() {
     const container = document.getElementById("inventory-grid-container");
     container.innerHTML = "";
 
     let slotsRendered = 0;
+    const totalFilled = getInventoryFilledSlots();
 
     for (let itemId in gameState.inventory) {
         const qty = gameState.inventory[itemId];
         if (qty <= 0) continue;
 
         const item = ITEM_DATABASE[itemId];
+        if (!item) continue;
+
+        if (currentInventoryFilter === "gear" && (item.type === "material" || item.type === "potion")) continue;
+        if (currentInventoryFilter === "material" && item.type !== "material") continue;
+        if (currentInventoryFilter === "consumable" && item.type !== "potion") continue;
+
         const slot = document.createElement("div");
         slot.className = "inv-slot";
         slot.onclick = () => openItemDetailsModal(itemId);
+
+        const meta = gameState.itemMeta && gameState.itemMeta[itemId];
+        const gradeHtml = (meta && meta.grade && item.type !== "material" && item.type !== "potion")
+            ? `<span class="grade-badge grade-${meta.grade}">${meta.grade}</span>`
+            : "";
         
         slot.innerHTML = `
+            ${gradeHtml}
             <span class="slot-item-icon">${item.icon}</span>
             <div class="item-quantity">${qty}</div>
             <div class="item-glow rarity-glow-${item.rarity}"></div>
@@ -4162,14 +4709,25 @@ function renderInventory() {
         slotsRendered++;
     }
 
-    // Fill remaining empty slots up to bags size (max 30)
+    // Fill remaining empty slots up to bags size
     for (let i = slotsRendered; i < gameState.settings.maxBagSlots; i++) {
         const slot = document.createElement("div");
         slot.className = "inv-slot";
         container.appendChild(slot);
     }
 
-    document.getElementById("bag-space-txt").innerText = `${slotsRendered} / ${gameState.settings.maxBagSlots} bags slots filled`;
+    document.getElementById("bag-space-txt").innerText = `${totalFilled} / ${gameState.settings.maxBagSlots} bags slots filled`;
+
+    const upgradeBtn = document.getElementById("btn-upgrade-bags");
+    if (upgradeBtn) {
+        if (gameState.settings.maxBagSlots >= 100) {
+            upgradeBtn.innerText = "🎒 Max Bags (100)";
+            upgradeBtn.disabled = true;
+        } else {
+            upgradeBtn.innerText = `🎒 Upgrade Bags (+10 Slots: ${parseCoins(getBagUpgradeCost())})`;
+            upgradeBtn.disabled = false;
+        }
+    }
 }
 
 // Market Sales Rendering
@@ -4245,7 +4803,7 @@ function renderActiveQuestsSidebar() {
         heroIds.forEach(id => {
             const h = gameState.heroes.find(hero => hero.id === id);
             if (h) {
-                heroListHtml.push(`${CLASS_DATABASE[h.class].classIcon} ${h.name}`);
+                heroListHtml.push(`${(CLASS_DATABASE[h.class] || CLASS_DATABASE.Warrior).classIcon} ${h.name}`);
             }
         });
 
@@ -4335,6 +4893,69 @@ function confirmHireHero() {
     pushBarrensChat("Guild Master", `${nameInput} (${heroClass}) has joined the guild!`);
 }
 
+// --- SQUAD PRESETS & AUTO-FILL BALANCED PARTY ---
+
+function getBalancedPartySelection(idleHeroes, targetCount) {
+    if (!Array.isArray(idleHeroes) || idleHeroes.length === 0) return [];
+    const limit = Math.min(targetCount, idleHeroes.length);
+
+    const scoreHero = (h) => {
+        const s = getHeroFullStats(h);
+        return (h.level * 100) + ((h.prestige || 0) * 500) + s.atk * 2 + s.def * 2 + s.hp * 0.2;
+    };
+
+    const sorted = [...idleHeroes].sort((a, b) => scoreHero(b) - scoreHero(a));
+    const chosen = [];
+    const pickWhere = (pred) => {
+        const match = sorted.find(h => !chosen.includes(h.id) && pred(h));
+        if (match && chosen.length < limit) {
+            chosen.push(match.id);
+        }
+    };
+
+    // 1. Pick a Tank first
+    pickWhere(h => h.class === "Warrior" || h.class === "Paladin" || h.class === "Druid");
+    // 2. Pick a Healer if group size >= 2
+    if (limit >= 2) {
+        pickWhere(h => h.class === "Priest" || h.class === "Shaman" || h.class === "Druid" || h.class === "Paladin");
+    }
+    // 3. Fill remaining with highest scored heroes
+    for (const h of sorted) {
+        if (chosen.length >= limit) break;
+        if (!chosen.includes(h.id)) {
+            chosen.push(h.id);
+        }
+    }
+    return chosen;
+}
+
+function savePartyPreset(name, heroIds) {
+    if (!Array.isArray(heroIds) || heroIds.length === 0) return null;
+    if (!Array.isArray(gameState.partyPresets)) gameState.partyPresets = [];
+
+    const presetName = (name && name.trim()) ? name.trim() : `Squad ${gameState.partyPresets.length + 1}`;
+    const preset = {
+        id: "preset_" + Date.now() + Math.random().toString(36).substr(2, 3),
+        name: presetName,
+        heroIds: [...heroIds]
+    };
+    if (gameState.partyPresets.length >= 5) {
+        gameState.partyPresets.shift();
+    }
+    gameState.partyPresets.push(preset);
+    saveGame();
+    pushWastesChat("Guild Coordinator", `📋 Saved party preset [${preset.name}] (${preset.heroIds.length} heroes).`);
+    return preset;
+}
+
+function deletePartyPreset(presetId) {
+    if (!Array.isArray(gameState.partyPresets)) return false;
+    const before = gameState.partyPresets.length;
+    gameState.partyPresets = gameState.partyPresets.filter(p => p.id !== presetId);
+    saveGame();
+    return gameState.partyPresets.length < before;
+}
+
 function openDispatchModal(zoneId, enemyId) {
     selectedDispatchQuest = { zoneId, enemyId };
     const container = document.getElementById("dispatch-hero-options");
@@ -4384,6 +5005,62 @@ function openDispatchModal(zoneId, enemyId) {
 
     // Track selected hero IDs locally in a list
     let selectedHeroIds = [];
+    const heroCardMap = {};
+
+    const syncSelectionUI = () => {
+        for (let hId in heroCardMap) {
+            const c = heroCardMap[hId];
+            const isSel = selectedHeroIds.includes(hId);
+            c.style.borderColor = isSel ? "var(--wow-border-gold)" : "var(--wow-border-dark)";
+            c.style.background = isSel ? "rgba(179, 143, 41, 0.15)" : "rgba(12, 13, 17, 0.8)";
+            const cb = c.querySelector("input");
+            if (cb) cb.checked = isSel;
+        }
+        updateConfirmButton();
+    };
+
+    // Quick Squad Toolbar (Auto-Fill Balanced Party & Saved Presets)
+    const presetToolbar = document.createElement("div");
+    presetToolbar.style.cssText = "display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; align-items:center;";
+
+    const autoFillBtn = document.createElement("button");
+    autoFillBtn.className = "wow-button secondary";
+    autoFillBtn.style.cssText = "font-size:0.75rem; padding:4px 8px;";
+    autoFillBtn.innerText = "⚡ Auto-Fill Balanced";
+    autoFillBtn.onclick = () => {
+        selectedHeroIds = getBalancedPartySelection(idleHeroes, maxHeroes);
+        syncSelectionUI();
+    };
+    presetToolbar.appendChild(autoFillBtn);
+
+    const savePresetBtn = document.createElement("button");
+    savePresetBtn.className = "wow-button secondary";
+    savePresetBtn.style.cssText = "font-size:0.75rem; padding:4px 8px;";
+    savePresetBtn.innerText = "💾 Save Squad";
+    savePresetBtn.onclick = () => {
+        if (selectedHeroIds.length === 0) {
+            alert("Select at least 1 hero to save as a Squad Preset!");
+            return;
+        }
+        savePartyPreset(`Squad ${((gameState.partyPresets && gameState.partyPresets.length) || 0) + 1}`, selectedHeroIds);
+        openDispatchModal(zoneId, enemyId);
+    };
+    presetToolbar.appendChild(savePresetBtn);
+
+    if (Array.isArray(gameState.partyPresets) && gameState.partyPresets.length > 0) {
+        gameState.partyPresets.forEach(preset => {
+            const pBtn = document.createElement("button");
+            pBtn.className = "wow-button secondary";
+            pBtn.style.cssText = "font-size:0.72rem; padding:4px 8px; border-color:rgba(255,209,0,0.4);";
+            pBtn.innerText = `📋 ${preset.name} (${preset.heroIds.length})`;
+            pBtn.onclick = () => {
+                selectedHeroIds = preset.heroIds.filter(id => idleHeroes.some(h => h.id === id)).slice(0, maxHeroes);
+                syncSelectionUI();
+            };
+            presetToolbar.appendChild(pBtn);
+        });
+    }
+    container.appendChild(presetToolbar);
 
     // Container for heroes list
     const listWrapper = document.createElement("div");
@@ -4426,6 +5103,7 @@ function openDispatchModal(zoneId, enemyId) {
         card.style.padding = "8px 12px";
         card.style.borderRadius = "4px";
         card.style.background = "rgba(12, 13, 17, 0.8)";
+        heroCardMap[hero.id] = card;
 
         // Toggling selection
         card.onclick = () => {
@@ -4479,6 +5157,146 @@ function openDispatchModal(zoneId, enemyId) {
     openModal("modal-select-hero-dispatch");
 }
 
+function isItemCompatibleWithSlot(hero, slot, item) {
+    if (!hero || !item) return false;
+    if (slot === "secondary") {
+        if (hero.class === "Warrior" || hero.class === "Paladin" || hero.class === "Shaman") {
+            return item.type === "shield" || item.type === "secondary";
+        } else if (hero.class === "Rogue" || hero.class === "Ranger") {
+            return item.type === "weapon";
+        } else if (hero.class === "Mage" || hero.class === "Priest" || hero.class === "Warlock" || hero.class === "Druid") {
+            return item.type === "offhand";
+        }
+        return false;
+    } else if (slot === "weapon") {
+        return item.type === "weapon";
+    }
+    return item.type === slot;
+}
+
+function getItemScoreForHero(hero, itemId) {
+    const item = ITEM_DATABASE[itemId];
+    if (!item || !item.stats) return 0;
+    let s = item.stats;
+    let score = (s.atk || 0) * 2.5 + (s.def || 0) * 2.0 + (s.hp || 0) * 0.4 + (s.crit || 0) * 3.0;
+    const meta = gameState.itemMeta && gameState.itemMeta[itemId];
+    if (meta && meta.bonusStats) {
+        const b = meta.bonusStats;
+        score += (b.atk || 0) * 2.5 + (b.def || 0) * 2.0 + (b.hp || 0) * 0.4 + (b.crit || 0) * 3.0;
+    }
+    return score;
+}
+
+function autoEquipBestGear(heroId) {
+    const targetId = heroId || selectedEquipHeroId;
+    const hero = gameState.heroes.find(h => h.id === targetId);
+    if (!hero) return 0;
+
+    const allSlots = ["head", "neck", "shoulders", "back", "chest", "hands", "waist", "legs", "boots", "ring", "trinket", "weapon", "secondary"];
+    let equippedCount = 0;
+
+    allSlots.forEach(slot => {
+        const currentItemId = hero.equipment[slot];
+        let bestItemId = currentItemId;
+        let bestScore = currentItemId ? getItemScoreForHero(hero, currentItemId) : -1;
+
+        for (let invItemId in gameState.inventory) {
+            if ((gameState.inventory[invItemId] || 0) <= 0) continue;
+            const item = ITEM_DATABASE[invItemId];
+            if (!isItemCompatibleWithSlot(hero, slot, item)) continue;
+            const score = getItemScoreForHero(hero, invItemId);
+            if (score > bestScore) {
+                bestScore = score;
+                bestItemId = invItemId;
+            }
+        }
+
+        if (bestItemId && bestItemId !== currentItemId) {
+            addInventory(bestItemId, -1);
+            if (currentItemId) {
+                addInventory(currentItemId, 1);
+            }
+            hero.equipment[slot] = bestItemId;
+            equippedCount++;
+        }
+    });
+
+    if (equippedCount > 0) {
+        const full = getHeroFullStats(hero);
+        hero.max_hp = full.hp;
+        if (hero.hp > full.hp) hero.hp = full.hp;
+        saveGame();
+        renderHeroes();
+        renderInventory();
+        pushWastesChat("Guild Coordinator", `⚡ Auto-equipped ${equippedCount} Best-in-Slot upgrade(s) on ${hero.name}!`);
+        if (selectedEquipHeroId === hero.id) {
+            openEquipModal(hero.id);
+        }
+    } else {
+        pushWastesChat("Guild Coordinator", `${hero.name} already has the best available gear equipped.`);
+    }
+    return equippedCount;
+}
+
+function enchantHeroGear(heroId) {
+    const targetId = heroId || selectedEquipHeroId;
+    const hero = gameState.heroes.find(h => h.id === targetId);
+    if (!hero) return false;
+
+    const targetSlot = ["weapon", "chest", "head", "ring", "trinket"].find(s => hero.equipment[s]);
+    if (!targetSlot) {
+        alert("Equip at least one primary item (Weapon, Chest, Head, Ring, or Trinket) on this hero before enchanting!");
+        return false;
+    }
+
+    const dustOwned = gameState.inventory["arcane_dust"] || 0;
+    const cost = 100;
+    if (dustOwned < 1) {
+        alert("Requires 1x [Arcane Dust] to enchant hero gear! Disenchant extra equipment in your bags to obtain Arcane Dust.");
+        return false;
+    }
+    if (gameState.gold < cost) {
+        alert(`Requires ${parseCoins(cost)} to channel an arcane enchantment!`);
+        return false;
+    }
+
+    addInventory("arcane_dust", -1);
+    addGold(-cost);
+
+    if (!hero.enchantments) hero.enchantments = {};
+    const prev = hero.enchantments[targetSlot] || { atk: 0, def: 0, hp: 0, crit: 0, level: 0 };
+    hero.enchantments[targetSlot] = {
+        atk: (prev.atk || 0) + 4,
+        def: (prev.def || 0) + 2,
+        hp: (prev.hp || 0) + 15,
+        crit: (prev.crit || 0) + 1,
+        level: (prev.level || 0) + 1
+    };
+
+    if (!gameState.crafters.enchanter) {
+        gameState.crafters.enchanter = { lvl: 1, xp: 0, max_xp: 100 };
+    }
+    gameState.crafters.enchanter.xp += 25;
+    if (gameState.crafters.enchanter.xp >= gameState.crafters.enchanter.max_xp) {
+        gameState.crafters.enchanter.lvl += 1;
+        gameState.crafters.enchanter.xp -= gameState.crafters.enchanter.max_xp;
+        gameState.crafters.enchanter.max_xp = gameState.crafters.enchanter.lvl * 120;
+    }
+
+    const fullStats = getHeroFullStats(hero);
+    hero.max_hp = fullStats.hp;
+    hero.hp = Math.min(fullStats.hp, hero.hp + 15);
+
+    saveGame();
+    renderHeroes();
+    renderInventory();
+    if (selectedEquipHeroId === hero.id) {
+        openEquipModal(hero.id);
+    }
+    pushWastesChat("Enchanter", `✨ Enchanted ${hero.name}'s [${ITEM_DATABASE[hero.equipment[targetSlot]].name}] (Tier +${hero.enchantments[targetSlot].level}: +4 Atk, +2 Def, +15 HP, +1% Crit)!`);
+    return true;
+}
+
 function openEquipSlotModal(heroId, slot) {
     selectedEquipSlot = { heroId, slot };
     const container = document.getElementById("equip-item-options");
@@ -4492,23 +5310,7 @@ function openEquipSlotModal(heroId, slot) {
     for (let itemId in gameState.inventory) {
         if (gameState.inventory[itemId] > 0) {
             const item = ITEM_DATABASE[itemId];
-            
-            let isCompatible = false;
-            if (slot === "secondary") {
-                if (hero.class === "Warrior" || hero.class === "Paladin") {
-                    isCompatible = (item.type === "shield");
-                } else if (hero.class === "Rogue") {
-                    isCompatible = (item.type === "weapon");
-                } else if (hero.class === "Mage" || hero.class === "Priest") {
-                    isCompatible = (item.type === "offhand");
-                }
-            } else if (slot === "weapon") {
-                isCompatible = (item.type === "weapon");
-            } else {
-                isCompatible = (item.type === slot);
-            }
-            
-            if (isCompatible) {
+            if (isItemCompatibleWithSlot(hero, slot, item)) {
                 gearList.push(itemId);
             }
         }
@@ -4563,19 +5365,30 @@ function openEquipModal(heroId) {
     // Set Text Details
     document.getElementById("equip-hero-title").innerText = `🛡️ Character Sheet: ${hero.name}`;
     document.getElementById("doll-hero-name").innerText = hero.name;
-    document.getElementById("doll-hero-level").innerText = `Level ${hero.level} Adventurer`;
+    document.getElementById("doll-hero-level").innerText = `Level ${hero.level} Adventurer${hero.prestige ? ` (Prestige ★${hero.prestige})` : ""}`;
     
+    const classInfo = CLASS_DATABASE[hero.class] || CLASS_DATABASE.Warrior;
     // Class tag branding
     const classTag = document.getElementById("doll-hero-class-tag");
     if (classTag) {
         classTag.className = `hero-class-tag class-${hero.class.toLowerCase()}`;
-        classTag.innerHTML = `${CLASS_DATABASE[hero.class].classIcon} ${hero.class}`;
+        classTag.innerHTML = `${classInfo.classIcon} ${hero.class}`;
     }
 
     // Centered class icon background silhouette
     const silhouette = document.getElementById("doll-silhouette");
     if (silhouette) {
-        silhouette.innerText = CLASS_DATABASE[hero.class].classIcon;
+        silhouette.innerText = classInfo.classIcon;
+    }
+
+    // Wire Best-in-Slot Auto-Equip and Enchant buttons
+    const autoEquipBtn = document.getElementById("btn-auto-equip-best");
+    if (autoEquipBtn) {
+        autoEquipBtn.onclick = () => autoEquipBestGear(hero.id);
+    }
+    const enchantBtn = document.getElementById("btn-enchant-hero-gear");
+    if (enchantBtn) {
+        enchantBtn.onclick = () => enchantHeroGear(hero.id);
     }
 
     // Core stats aggregation sheet
@@ -4766,9 +5579,13 @@ function unequipItem(heroId, slot) {
 function openItemDetailsModal(itemId) {
     selectedInventorySlot = itemId;
     const item = ITEM_DATABASE[itemId];
+    const meta = gameState.itemMeta && gameState.itemMeta[itemId];
     
     const nameEl = document.getElementById("item-details-name");
-    nameEl.innerText = `[${item.name}]`;
+    const fullLabel = meta
+        ? `[Grade ${meta.grade}] ${meta.prefix ? meta.prefix + " " : ""}[${item.name}]${meta.suffix ? " " + meta.suffix : ""}`
+        : `[${item.name}]`;
+    nameEl.innerText = fullLabel;
     nameEl.className = `text-rarity-${item.rarity}`;
     
     document.getElementById("item-details-type").innerText = item.type;
@@ -4777,7 +5594,15 @@ function openItemDetailsModal(itemId) {
     let statsHtml = "";
     if (item.stats) {
         for (let s in item.stats) {
-            statsHtml += `<div>+${item.stats[s]} ${s.toUpperCase()}</div>`;
+            const bonus = (meta && meta.bonusStats && meta.bonusStats[s]) ? ` (+${meta.bonusStats[s]} Crafted)` : "";
+            statsHtml += `<div>+${item.stats[s]} ${s.toUpperCase()}${bonus}</div>`;
+        }
+        if (meta && meta.bonusStats) {
+            for (let b in meta.bonusStats) {
+                if (!item.stats[b]) {
+                    statsHtml += `<div style="color:#fbbf24;">+${meta.bonusStats[b]} ${b.toUpperCase()} (Affix)</div>`;
+                }
+            }
         }
     } else if (item.desc) {
         statsHtml = `<div>${item.desc}</div>`;
@@ -4796,6 +5621,15 @@ function openItemDetailsModal(itemId) {
         actBtn.innerText = "Sell Directly";
         actBtn.onclick = () => sellItemDirect();
     }
+
+    const disenchantBtn = document.getElementById("item-details-disenchant-btn");
+    if (disenchantBtn) {
+        if (item.type !== "material" && item.type !== "potion") {
+            disenchantBtn.style.display = "inline-block";
+        } else {
+            disenchantBtn.style.display = "none";
+        }
+    }
     
     openModal("modal-item-details");
 }
@@ -4803,7 +5637,7 @@ function openItemDetailsModal(itemId) {
 function openPotionConsumeModal(potionId) {
     closeModal("modal-item-details");
     
-    // Pick hero to heal
+    // Pick hero to heal or buff
     const container = document.getElementById("dispatch-hero-options");
     container.innerHTML = "";
 
@@ -4835,10 +5669,13 @@ function openPotionConsumeModal(potionId) {
 
 function consumePotion(heroId, potionId) {
     const hero = gameState.heroes.find(h => h.id === heroId);
-    if (!hero) return;
+    if (!hero) return false;
 
     const item = ITEM_DATABASE[potionId];
-    if (!item) return;
+    if (!item) return false;
+
+    const owned = gameState.inventory[potionId] || 0;
+    if (owned < 1) return false;
 
     if (potionId === "minor_healing_potion" || potionId === "major_healing_potion") {
         const healAmt = potionId === "minor_healing_potion" ? 50 : 250;
@@ -4846,13 +5683,31 @@ function consumePotion(heroId, potionId) {
         hero.hp = Math.min(max, hero.hp + healAmt);
         
         addInventory(potionId, -1);
-        pushBarrensChat("Alchemy Shop", `Administered RESTORATIVE potion to ${hero.name}. Restored +${healAmt} HP.`);
+        pushWastesChat("Alchemy Shop", `Administered [${item.name}] to ${hero.name}. Restored +${healAmt} HP.`);
+    } else if (item.buff) {
+        hero.activeBuff = {
+            id: potionId,
+            name: item.buff.name || item.name,
+            atk: item.buff.atk || 0,
+            def: item.buff.def || 0,
+            hp: item.buff.hp || 0,
+            crit: item.buff.crit || 0,
+            questsRemaining: item.buff.quests || 3
+        };
+        const fullStats = getHeroFullStats(hero);
+        hero.max_hp = fullStats.hp;
+        if (item.buff.hp) {
+            hero.hp = Math.min(fullStats.hp, hero.hp + item.buff.hp);
+        }
+        addInventory(potionId, -1);
+        pushWastesChat("Alchemy Shop", `🧪 ${hero.name} imbibed [${item.name}]! Buff active for ${hero.activeBuff.questsRemaining} quests.`);
     }
 
     closeModal("modal-select-hero-dispatch");
     document.querySelector("#modal-select-hero-dispatch h3").innerText = "Select Dispatch Hero"; // reset title
     renderHeroes();
     renderInventory();
+    return true;
 }
 
 // --- WASTES MEMES CHAT SYSTEM ---
@@ -5497,6 +6352,14 @@ function closeBattleReport() {
                 hero.xp = state.xp;
                 hero.level = state.level;
                 hero.max_xp = state.max_xp;
+                if (hero.activeBuff && hero.activeBuff.questsRemaining > 0) {
+                    hero.activeBuff.questsRemaining -= 1;
+                    if (hero.activeBuff.questsRemaining <= 0) {
+                        hero.activeBuff = null;
+                    }
+                    const maxAfter = getHeroFullStats(hero).hp;
+                    if (hero.hp > maxAfter) hero.hp = maxAfter;
+                }
             }
         }
 
@@ -5573,6 +6436,15 @@ function quickCollectQuestRewards(questId) {
             hero.xp = state.xp;
             hero.level = state.level;
             hero.max_xp = state.max_xp;
+
+            if (hero.activeBuff && hero.activeBuff.questsRemaining > 0) {
+                hero.activeBuff.questsRemaining -= 1;
+                if (hero.activeBuff.questsRemaining <= 0) {
+                    hero.activeBuff = null;
+                }
+                const maxAfter = getHeroFullStats(hero).hp;
+                if (hero.hp > maxAfter) hero.hp = maxAfter;
+            }
 
             if (replay.won) {
                 pushBarrensChat("Guild Coordinator", `${hero.name} gained +${replay.xpEarned} XP.`);
@@ -5678,11 +6550,37 @@ if (typeof module !== 'undefined' && module.exports) {
         gameState,
         parseCoins,
         createHero,
+        getHeroMaxAp,
+        getHeroFullStats,
+        prestigeHero,
+        restAllIdleHeroes,
+        processOfflineProgress,
         addInventory,
         getInventoryFilledSlots,
         resolveCombat,
         generateCustomerOffer,
+        rollCraftedItemQuality,
         craftItem,
+        disenchantItem,
+        disenchantSelectedItem,
+        getBagUpgradeCost,
+        upgradeBagSlots,
+        setInventoryFilter,
+        batchSellJunk,
+        getBalancedPartySelection,
+        savePartyPreset,
+        deletePartyPreset,
+        isItemCompatibleWithSlot,
+        getItemScoreForHero,
+        autoEquipBestGear,
+        enchantHeroGear,
+        consumePotion,
+        openPotionConsumeModal,
+        openSkillsModal,
+        startBattleReplay,
+        closeBattleReport,
+        skipReplay,
+        toggleReplaySpeed,
         loadGame,
         saveGame,
         resetGame,

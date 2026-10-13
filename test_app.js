@@ -1096,6 +1096,260 @@ test('Zone asset mappings and enemy card styled background covers resolve succes
     assert.notStrictEqual(koboldBg, spiderBg, 'Every enemy must have a unique procedurally generated background artwork');
 });
 
+test('Phase 1: Tavern Rest, Squad Presets, Balanced Party & Auto-Equip Best Gear', () => {
+    app.gameState.heroes = [];
+    app.gameState.inventory = {};
+    app.gameState.itemMeta = {};
+    app.gameState.partyPresets = [];
+    app.gameState.gold = 50000;
+
+    const tank = app.createHero('TankWar', 'Warrior');
+    const healer = app.createHero('HealPriest', 'Priest');
+    const dps1 = app.createHero('BowRanger', 'Ranger');
+    const dps2 = app.createHero('LockCaster', 'Warlock');
+    app.gameState.heroes.push(tank, healer, dps1, dps2);
+
+    // 1. Test getBalancedPartySelection prioritizes Tank + Healer + top DPS
+    const balanced3 = app.getBalancedPartySelection(app.gameState.heroes, 3);
+    assert.strictEqual(balanced3.length, 3);
+    assert.ok(balanced3.includes(tank.id), 'Balanced party should include Tank');
+    assert.ok(balanced3.includes(healer.id), 'Balanced party should include Healer');
+
+    // 2. Test savePartyPreset & deletePartyPreset
+    for (let i = 1; i <= 6; i++) {
+        app.savePartyPreset(`Preset ${i}`, [tank.id, healer.id]);
+    }
+    assert.strictEqual(app.gameState.partyPresets.length, 5, 'Should cap presets at 5');
+    const firstPresetId = app.gameState.partyPresets[0].id;
+    const deleted = app.deletePartyPreset(firstPresetId);
+    assert.strictEqual(deleted, true);
+    assert.strictEqual(app.gameState.partyPresets.length, 4);
+
+    // Render dispatch modal with saved presets and trigger toolbar buttons
+    app.openDispatchModal(0, 'kobold_vermin');
+    const dispatchContainer = document.getElementById('dispatch-hero-options');
+    assert.ok(dispatchContainer.children.length >= 3);
+
+    // 3. Test restAllIdleHeroes (injured + dead heroes)
+    tank.hp = 10;
+    healer.hp = 0;
+    healer.status = 'Dead';
+    const goldBefore = app.gameState.gold;
+    const rested = app.restAllIdleHeroes();
+    assert.strictEqual(rested, true);
+    assert.strictEqual(tank.hp, app.getHeroFullStats(tank).hp, 'Injured hero should be healed to full');
+    assert.strictEqual(healer.status, 'Idle', 'Dead hero should be revived to Idle');
+    assert.strictEqual(healer.hp, app.getHeroFullStats(healer).hp, 'Revived hero should have full HP');
+    assert.ok(app.gameState.gold < goldBefore, 'Tavern rest should deduct gold');
+
+    // Calling again when everyone is healthy returns false
+    assert.strictEqual(app.restAllIdleHeroes(), false);
+
+    // 4. Test isItemCompatibleWithSlot, getItemScoreForHero, and autoEquipBestGear
+    app.addInventory('copper_sword', 1);
+    app.addInventory('iron_broadsword', 1);
+    app.addInventory('copper_shield', 1);
+    app.addInventory('linen_robe', 1);
+
+    assert.strictEqual(app.isItemCompatibleWithSlot(tank, 'weapon', app.ITEM_DATABASE.iron_broadsword), true);
+    assert.strictEqual(app.isItemCompatibleWithSlot(tank, 'secondary', app.ITEM_DATABASE.copper_shield), true);
+    assert.strictEqual(app.isItemCompatibleWithSlot(dps1, 'secondary', app.ITEM_DATABASE.copper_sword), true);
+    assert.strictEqual(app.isItemCompatibleWithSlot(dps2, 'secondary', app.ITEM_DATABASE.copper_shield), false);
+
+    assert.ok(app.getItemScoreForHero(tank, 'iron_broadsword') > app.getItemScoreForHero(tank, 'copper_sword'));
+
+    tank.equipment.weapon = 'copper_sword';
+    const upgrades = app.autoEquipBestGear(tank.id);
+    assert.ok(upgrades >= 2, 'Should equip iron_broadsword, copper_shield, and linen_robe');
+    assert.strictEqual(tank.equipment.weapon, 'iron_broadsword', 'Should upgrade weapon to iron_broadsword');
+    assert.strictEqual(tank.equipment.secondary, 'copper_shield', 'Should equip copper_shield in secondary');
+    assert.strictEqual(tank.equipment.chest, 'linen_robe', 'Should equip linen_robe in chest');
+    assert.strictEqual(app.gameState.inventory['copper_sword'], 2, 'Replaced copper_sword should return to inventory alongside existing one');
+});
+
+test('Phase 2: Crafting Quality Grades, Affixes, Enchanting, Disenchanting, Bag Upgrades & Filters', () => {
+    app.gameState.inventory = {};
+    app.gameState.itemMeta = {};
+    app.gameState.gold = 100000;
+    app.gameState.settings = { maxHeroes: 40, maxBagSlots: 30 };
+    app.gameState.crafters.blacksmith = { lvl: 12, xp: 0, max_xp: 1000 };
+    app.gameState.crafters.enchanter = { lvl: 10, xp: 0, max_xp: 1000 };
+
+    // 1. Test rollCraftedItemQuality produces valid grade and bonus stats
+    const meta = app.rollCraftedItemQuality('iron_broadsword', 'blacksmith');
+    assert.ok(meta);
+    assert.ok(['S', 'A', 'B', 'C', 'D'].includes(meta.grade));
+    assert.ok(meta.bonusStats);
+    assert.strictEqual(app.rollCraftedItemQuality('copper_ore', 'blacksmith'), null, 'Materials should not roll quality');
+
+    // 2. Test crafting an item records itemMeta and renders in Item Details Modal
+    app.addInventory('copper_ore', 20);
+    app.craftItem('copper_sword', 'blacksmith');
+    assert.strictEqual(app.gameState.inventory['copper_sword'], 1);
+    assert.ok(app.gameState.itemMeta['copper_sword'], 'Crafted gear should store quality metadata');
+    app.openItemDetailsModal('copper_sword');
+
+    // 3. Test disenchantItem & disenchantSelectedItem across rarities
+    app.addInventory('iron_broadsword', 1); // rarity 2
+    app.addInventory('golem_crusher', 1); // rarity 3
+    const deRes1 = app.disenchantItem('copper_sword');
+    assert.strictEqual(deRes1, true);
+    assert.ok((app.gameState.inventory['arcane_dust'] || 0) >= 1, 'Disenchanting common gear yields arcane_dust');
+
+    app.openItemDetailsModal('iron_broadsword');
+    app.disenchantSelectedItem();
+    assert.strictEqual(app.gameState.inventory['iron_broadsword'] || 0, 0);
+
+    // 4. Test Enchanter profession switching & crafting recipes
+    app.switchProfession('enchanter');
+    app.addInventory('arcane_dust', 20);
+    app.addInventory('greater_magic_essence', 10);
+    app.addInventory('void_crystal', 5);
+    app.addInventory('copper_ore', 10);
+    app.addInventory('linen_cloth', 10);
+    app.addInventory('woolen_cloth', 10);
+    app.craftItem('minor_ward_ring', 'enchanter');
+    app.craftItem('enchanted_wanderer_cloak', 'enchanter');
+    app.craftItem('tome_of_arcane_brilliance', 'enchanter');
+    assert.strictEqual(app.gameState.inventory['minor_ward_ring'], 1);
+    assert.strictEqual(app.gameState.inventory['enchanted_wanderer_cloak'], 1);
+    assert.strictEqual(app.gameState.inventory['tome_of_arcane_brilliance'], 1);
+
+    // 5. Test enchantHeroGear applies permanent slot enchantments & boosts stats
+    const hero = app.createHero('EnchantTarget', 'Warrior');
+    hero.equipment.weapon = 'golem_crusher';
+    app.gameState.heroes = [hero];
+    const baseStats = app.getHeroFullStats(hero);
+    const enchanted = app.enchantHeroGear(hero.id);
+    assert.strictEqual(enchanted, true);
+    const afterStats = app.getHeroFullStats(hero);
+    assert.strictEqual(afterStats.atk, baseStats.atk + 4);
+    assert.strictEqual(afterStats.def, baseStats.def + 2);
+    assert.strictEqual(afterStats.hp, baseStats.hp + 15);
+
+    // 6. Test Bag Upgrades, Inventory Filter Tabs & Batch Sell Junk
+    const initialCost = app.getBagUpgradeCost();
+    assert.strictEqual(initialCost, 500);
+    assert.strictEqual(app.upgradeBagSlots(), true);
+    assert.strictEqual(app.gameState.settings.maxBagSlots, 40);
+
+    app.setInventoryFilter('gear');
+    app.setInventoryFilter('material');
+    app.setInventoryFilter('consumable');
+    app.setInventoryFilter('all');
+
+    app.addInventory('broken_candle', 3); // rarity 0 junk
+    app.addInventory('heavy_copper_boots', 2); // rarity 1 common gear
+    const soldCount = app.batchSellJunk();
+    assert.strictEqual(soldCount, 5, 'Should batch sell 3 broken_candle + 2 heavy_copper_boots');
+    assert.strictEqual(app.gameState.inventory['broken_candle'] || 0, 0);
+    assert.strictEqual(app.gameState.inventory['heavy_copper_boots'] || 0, 0);
+    assert.ok(app.gameState.inventory['arcane_dust'] > 0, 'Crafting materials must not be sold by batchSellJunk');
+});
+
+test('Phase 3: New Playable Classes (Ranger, Warlock, Druid, Shaman) & Hero Prestige Ascension', () => {
+    app.gameState.heroes = [];
+    app.gameState.gold = 50000;
+
+    // 1. Create all 4 new classes and equip their all-5-skill rotations
+    const ranger = app.createHero('Rexxar', 'Ranger');
+    const warlock = app.createHero('Guldan', 'Warlock');
+    const druid = app.createHero('Malfurion', 'Druid');
+    const shaman = app.createHero('Thrall', 'Shaman');
+
+    [ranger, warlock, druid, shaman].forEach(h => {
+        h.level = 50;
+        h.atk = 20;
+        h.def = 30;
+        h.hp = 800;
+        h.max_hp = 800;
+        const classSkills = app.SKILL_DATABASE[h.class];
+        assert.strictEqual(classSkills.length, 5, `${h.class} should have 5 skills`);
+        h.skills = classSkills.map(s => s.id);
+        app.gameState.heroes.push(h);
+    });
+
+    // 2. Run combat simulation against a high-HP boss so all 5 turns of skills execute
+    const replay = app.resolveCombat({
+        id: 'q_new_classes',
+        heroIds: [ranger.id, warlock.id, druid.id, shaman.id],
+        enemyId: 'greentooth',
+        zoneId: 1
+    });
+    assert.ok(replay, 'Combat replay should resolve cleanly with all 4 new classes');
+    assert.ok(replay.events.length > 5, 'Combat should log multiple skill events from the new classes');
+
+    // 3. Test Hero Prestige (Ascension)
+    ranger.level = 59;
+    assert.strictEqual(app.prestigeHero(ranger.id), false, 'Cannot prestige below level 60');
+
+    ranger.level = 60;
+    const lvl1StatsBefore = app.getHeroFullStats({ ...ranger, level: 1, prestige: 0 });
+    const apBefore = app.getHeroMaxAp(ranger);
+    const ascended = app.prestigeHero(ranger.id);
+    assert.strictEqual(ascended, true, 'Level 60 idle hero should ascend');
+    assert.strictEqual(ranger.prestige, 1);
+    assert.strictEqual(ranger.level, 1, 'Ascended hero resets to Level 1');
+    const lvl1StatsAfter = app.getHeroFullStats(ranger);
+    assert.ok(lvl1StatsAfter.atk > lvl1StatsBefore.atk, 'Ascension permanently boosts base and growth stats by +25%');
+    assert.strictEqual(app.getHeroMaxAp({ ...ranger, level: 60 }), apBefore + 2, 'Ascension grants +2 Max AP per tier');
+
+    // Render heroes and paper-doll modal with prestige hero
+    app.renderHeroes();
+    app.openEquipModal(ranger.id);
+});
+
+test('Phase 4: Alchemy Elixirs, Raid Flasks, Active Buffs & Offline Progress', () => {
+    app.gameState.heroes = [];
+    app.gameState.inventory = {};
+    app.gameState.activeQuests = [];
+    app.gameState.customers = [];
+
+    const hero = app.createHero('AlchTester', 'Paladin');
+    app.gameState.heroes.push(hero);
+
+    // 1. Test consuming an Alchemy Flask / Elixir applies activeBuff and boosts stats
+    app.addInventory('flask_of_supreme_power', 1);
+    app.openPotionConsumeModal('flask_of_supreme_power');
+    const baseStats = app.getHeroFullStats(hero);
+    const consumed = app.consumePotion(hero.id, 'flask_of_supreme_power');
+    assert.strictEqual(consumed, true);
+    assert.ok(hero.activeBuff, 'Hero should have an activeBuff after consuming flask');
+    assert.strictEqual(hero.activeBuff.questsRemaining, 5);
+
+    const buffedStats = app.getHeroFullStats(hero);
+    assert.strictEqual(buffedStats.atk, baseStats.atk + 45);
+    assert.strictEqual(buffedStats.crit, baseStats.crit + 12);
+
+    // 2. Test buff duration decrements when collecting quest rewards
+    app.startQuest([hero.id], 'kobold_vermin', 0);
+    const q = app.gameState.activeQuests[0];
+    q.durationRemaining = 0;
+    q.isCompleted = true;
+    app.quickCollectQuestRewards(q.id);
+    assert.strictEqual(hero.activeBuff.questsRemaining, 4, 'Active buff should decrement questsRemaining after combat');
+
+    // Expire buff on final quest via closeBattleReport
+    hero.activeBuff.questsRemaining = 1;
+    app.startQuest([hero.id], 'kobold_vermin', 0);
+    const q2 = app.gameState.activeQuests[0];
+    app.startBattleReplay(q2.id);
+    app.skipReplay();
+    app.closeBattleReport();
+    assert.strictEqual(hero.activeBuff, null, 'Active buff should clear when questsRemaining reaches 0');
+
+    // 3. Test processOfflineProgress advances quest timers and spawns customers
+    app.startQuest([hero.id], 'kobold_vermin', 0);
+    const activeQ = app.gameState.activeQuests[0];
+    assert.ok(!activeQ.isCompleted);
+
+    const offlineRes = app.processOfflineProgress(120);
+    assert.strictEqual(offlineRes.completedCount, 1);
+    assert.strictEqual(activeQ.isCompleted, true);
+    assert.strictEqual(activeQ.durationRemaining, 0);
+    assert.ok(app.gameState.customers.length > 0, 'Offline progress should spawn shop customers');
+});
+
 
 
 
