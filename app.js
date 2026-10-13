@@ -1928,23 +1928,78 @@ const CUSTOMER_NAMES = [
 function scaleEnemyDatabase() {
     ZONE_DATABASE.forEach(zone => {
         const type = zone.type || "zone";
-        let hpMultiplier = 1.5;
-        let atkMultiplier = 1.25;
 
-        if (type === "dungeon") {
-            hpMultiplier = 2.2;
-            atkMultiplier = 1.45;
-        } else if (type === "raid") {
-            hpMultiplier = 3.5;
-            atkMultiplier = 1.85;
-        }
-
-        zone.enemies.forEach(enemy => {
+        zone.enemies.forEach((enemy, idx) => {
             if (enemy.isBalanced) return;
+
+            const isBoss = enemy.name.includes("[Boss]");
+            const isElite = enemy.name.includes("[Elite]");
+            const lvl = enemy.level || 1;
+            // Moderate progressive scaling since ZONE_DATABASE base stats already grow with level
+            const lvlScale = 1 + Math.pow(lvl / 60, 0.95) * 0.55;
+            const earlyBoost = lvl <= 20 ? (1 + (20 - lvl) * 0.025) : 1.0;
+            const lateZoneBoost = (type === "zone" && lvl >= 16) ? (1 + Math.pow((lvl - 12) / 40, 0.85) * 0.55) : 1.0;
+
+            let hpMultiplier = 1.4;
+            let atkMultiplier = 1.3;
+            let defMultiplier = 1.3;
+
+            if (type === "zone") {
+                if (lvl <= 4) {
+                    hpMultiplier = 1.75;
+                    atkMultiplier = 2.15;
+                    defMultiplier = 1.15;
+                } else if (isElite) {
+                    hpMultiplier = 2.55 * lvlScale;
+                    atkMultiplier = 2.45 * Math.sqrt(lvlScale);
+                    defMultiplier = 1.65 * Math.sqrt(lvlScale);
+                } else {
+                    hpMultiplier = 2.85 * lvlScale * earlyBoost * lateZoneBoost;
+                    atkMultiplier = 2.55 * Math.sqrt(lvlScale) * earlyBoost * Math.sqrt(lateZoneBoost);
+                    defMultiplier = 1.5 * Math.sqrt(lvlScale);
+                }
+            } else if (type === "dungeon") {
+                if (isBoss) {
+                    // Final boss of a dungeon (idx >= 3) already has higher base stats; slightly temper multiplier so both bosses are balanced
+                    let bossIdxFactor = idx >= 3 ? 0.90 : 1.0;
+                    if (enemy.id === "stonefist") bossIdxFactor = 1.25; // Stonefist base stats in DB were lower than Brutetooth
+                    const bossEarly = lvl <= 10 ? 0.92 : earlyBoost;
+                    hpMultiplier = 3.55 * lvlScale * bossEarly * bossIdxFactor;
+                    atkMultiplier = 2.48 * Math.sqrt(lvlScale) * bossIdxFactor;
+                    defMultiplier = 1.60 * Math.sqrt(lvlScale) * bossIdxFactor;
+                } else {
+                    const trashScale = lvl <= 10 ? 0.82 : (lvl >= 12 ? 1.32 : 1.0);
+                    const trashAtkScale = lvl <= 10 ? 0.72 : (lvl >= 12 ? Math.sqrt(1.32) : 1.0);
+                    hpMultiplier = 5.4 * lvlScale * trashScale;
+                    atkMultiplier = 2.85 * Math.sqrt(lvlScale) * trashAtkScale;
+                    defMultiplier = 1.50 * Math.sqrt(lvlScale);
+                }
+            } else if (type === "raid") {
+                if (isBoss) {
+                    // Normalize extreme late-raid base stat spikes (e.g. Onyxia/Darkwing/Ignis vs Magmatalon)
+                    const slope = enemy.hp > 22000 ? 0.18 : 0.28;
+                    const baseHpNorm = enemy.hp > 15000 ? (15000 + (enemy.hp - 15000) * slope) / enemy.hp : 1.0;
+                    const baseAtkNorm = enemy.atk > 200 ? (200 + (enemy.atk - 200) * slope) / enemy.atk : 1.0;
+                    const baseDefNorm = enemy.def > 75 ? (75 + (enemy.def - 75) * 0.25) / enemy.def : 1.0;
+                    hpMultiplier = 4.9 * baseHpNorm;
+                    atkMultiplier = 2.65 * baseAtkNorm;
+                    defMultiplier = 1.65 * baseDefNorm;
+                } else if (isElite) {
+                    hpMultiplier = 12.5;
+                    atkMultiplier = 2.95;
+                    defMultiplier = 1.60;
+                } else {
+                    const trashHpNorm = enemy.hp < 1800 ? 2.15 : 1.25;
+                    const trashAtkNorm = enemy.atk < 95 ? 1.65 : 1.15;
+                    hpMultiplier = 16.5 * trashHpNorm;
+                    atkMultiplier = 3.45 * trashAtkNorm;
+                    defMultiplier = 1.55;
+                }
+            }
 
             enemy.hp = Math.round(enemy.hp * hpMultiplier);
             enemy.atk = Math.round(enemy.atk * atkMultiplier);
-            enemy.def = Math.round(enemy.def * (type === "zone" ? 1.2 : 1.4));
+            enemy.def = Math.round(enemy.def * defMultiplier);
             enemy.isBalanced = true;
         });
     });
@@ -2812,7 +2867,7 @@ function resolveCombat(quest) {
         
         // --- 1. HEROES PHASE: Each living hero performs their assigned skill slot action ---
         activeHeroes.forEach(h => {
-            if (h.currentHp <= 0) return; // Fallen heroes cannot act
+            if (h.currentHp <= 0 || enemyHp <= 0) return; // Fallen heroes or slain enemy stops turn actions
 
             if (h.stunned) {
                 h.stunned = false;
@@ -2848,58 +2903,59 @@ function resolveCombat(quest) {
                 let mult = 1.0;
                 let addCritChance = 0;
                 
-                if (skill.id === "heroic_strike") mult = 1.5;
-                else if (skill.id === "sunder_armor") mult = 1.1;
+                if (skill.id === "heroic_strike") mult = 1.65;
+                else if (skill.id === "sunder_armor") mult = 1.3;
                 else if (skill.id === "shield_slam") {
-                    // Deal damage based on finalDef
-                    const rawDefDmg = finalDef * 1.8;
-                    // Shield slam uses armor as fuel
-                    let damage = rawDefDmg - (enemy.def * enemyBuffs.def);
-                    if (enemyDebuffs.expose > 0) damage = rawDefDmg - (enemy.def * enemyBuffs.def * 0.55);
-                    else if (enemyDebuffs.sunder > 0) damage = rawDefDmg - (enemy.def * enemyBuffs.def * 0.70);
-                    if (damage < 1) damage = 1;
+                    // Deal damage based on finalDef + Atk
+                    const rawDefDmg = (finalDef * 1.6) + (finalAtk * 0.6);
+                    let effEnemyDef = enemy.def * enemyBuffs.def * 0.7;
+                    if (enemyDebuffs.expose > 0) effEnemyDef *= 0.55;
+                    if (enemyDebuffs.sunder > 0) effEnemyDef *= 0.70;
+                    let damage = Math.max(Math.round(rawDefDmg * 0.25), Math.round(rawDefDmg - effEnemyDef));
                     
                     let isCrit = Math.random() * 100 < (h.stats.crit + h.buffs.crit);
                     if (isCrit) damage = Math.round(damage * 1.8);
-                    else damage = Math.round(damage);
 
                     enemyHp -= damage;
                     logEvent(`Turn ${turn}: ${h.obj.name} slams with their shield, dealing ${damage} damage to ${enemy.name}!`, "enemy");
                     
                     // Gain defense block
-                    h.buffs.def_mult = Math.max(h.buffs.def_mult, 1.25);
-                    h.buffs.def_duration = Math.max(h.buffs.def_duration, 2);
+                    h.buffs.def_mult = Math.max(h.buffs.def_mult, 1.35);
+                    h.buffs.def_duration = Math.max(h.buffs.def_duration || 0, 2);
                     return;
                 }
-                else if (skill.id === "fireball") mult = 1.8;
-                else if (skill.id === "frostbolt") mult = 1.2;
-                else if (skill.id === "pyroblast") mult = 2.8;
-                else if (skill.id === "sinister_strike") mult = 1.4;
-                else if (skill.id === "expose_armor") mult = 1.0;
+                else if (skill.id === "fireball") mult = 1.9;
+                else if (skill.id === "frostbolt") mult = 1.4;
+                else if (skill.id === "pyroblast") mult = 2.9;
+                else if (skill.id === "sinister_strike") mult = 1.5;
+                else if (skill.id === "expose_armor") mult = 1.25;
                 else if (skill.id === "eviscerate") {
-                    mult = 2.0;
+                    mult = 2.15;
                     addCritChance = 30; // Rogue crit scaling!
                 }
-                else if (skill.id === "mind_blast") mult = 1.5;
-                else if (skill.id === "judgement_of_light") mult = 1.1;
-                else if (skill.id === "consecration") mult = 0.0; // Consecration is dot only
-                else if (skill.id === "aimed_shot") { mult = 1.6; addCritChance = 15; }
-                else if (skill.id === "hunters_mark") mult = 1.0;
-                else if (skill.id === "wolf_companion") mult = 1.3;
-                else if (skill.id === "rapid_volley") mult = 2.4;
-                else if (skill.id === "shadow_bolt") mult = 1.7;
-                else if (skill.id === "corruption") mult = 0.8;
-                else if (skill.id === "drain_life") mult = 1.3;
-                else if (skill.id === "chaos_doom") mult = 2.9;
-                else if (skill.id === "moonfire") mult = 1.2;
-                else if (skill.id === "ferocious_bite") { mult = 2.1; addCritChance = 20; }
-                else if (skill.id === "lightning_bolt") mult = 1.5;
-                else if (skill.id === "chain_lightning") mult = 2.3;
+                else if (skill.id === "mind_blast") mult = 1.65;
+                else if (skill.id === "judgement_of_light") mult = 1.35;
+                else if (skill.id === "consecration") mult = 1.1; // Initial holy burst + DoT
+                else if (skill.id === "aimed_shot") { mult = 1.75; addCritChance = 15; }
+                else if (skill.id === "hunters_mark") mult = 1.25;
+                else if (skill.id === "wolf_companion") mult = 1.45;
+                else if (skill.id === "rapid_volley") mult = 2.55;
+                else if (skill.id === "shadow_bolt") mult = 1.85;
+                else if (skill.id === "corruption") mult = 1.15;
+                else if (skill.id === "drain_life") mult = 1.45;
+                else if (skill.id === "chaos_doom") mult = 3.0;
+                else if (skill.id === "moonfire") mult = 1.35;
+                else if (skill.id === "ferocious_bite") { mult = 2.2; addCritChance = 20; }
+                else if (skill.id === "lightning_bolt") mult = 1.6;
+                else if (skill.id === "chain_lightning") mult = 2.4;
 
-                // Calculate Net Damage
+                // Calculate Net Damage (active skills penetrate armor better than basic_attack)
                 let enemyCurrentDef = enemy.def * enemyBuffs.def;
                 if (enemyDebuffs.expose > 0) enemyCurrentDef *= 0.55;
-                else if (enemyDebuffs.sunder > 0) enemyCurrentDef *= 0.70;
+                if (enemyDebuffs.sunder > 0) enemyCurrentDef *= 0.70;
+
+                const isBasic = skill.id === "basic_attack";
+                const effectiveDef = isBasic ? (enemyCurrentDef * 1.1) : (enemyCurrentDef * 0.72);
 
                 let isCrit = Math.random() * 100 < (h.stats.crit + h.buffs.crit + addCritChance);
                 
@@ -2907,10 +2963,9 @@ function resolveCombat(quest) {
                 if (mult > 0 && Math.random() < enemyBuffs.evade) {
                     logEvent(`Turn ${turn}: ${h.obj.name} casts ${skill.name}, but ${enemy.name} DODGES!`);
                 } else {
-                    let dmg = finalAtk * mult - enemyCurrentDef;
-                    if (dmg < 1) dmg = 1;
+                    const minFloor = isBasic ? Math.max(1, Math.round(finalAtk * 0.12)) : Math.max(2, Math.round(finalAtk * mult * 0.25));
+                    let dmg = Math.max(minFloor, Math.round(finalAtk * mult - effectiveDef));
                     if (isCrit) dmg = Math.round(dmg * 1.8);
-                    else dmg = Math.round(dmg);
 
                     if (mult > 0) {
                         enemyHp -= dmg;
@@ -2926,161 +2981,217 @@ function resolveCombat(quest) {
                         enemyDebuffs.sunder = 3;
                         logEvent(`Turn ${turn}: ${enemy.name} is afflicted with ${skill.name}! (-30% Defense for 3 turns).`);
                     } else if (skill.id === "expose_armor") {
-                        enemyDebuffs.expose = 2;
-                        logEvent(`Turn ${turn}: ${enemy.name} is afflicted with Expose Armor! (-45% Defense for 2 turns).`);
+                        enemyDebuffs.expose = 3;
+                        logEvent(`Turn ${turn}: ${enemy.name} is afflicted with Expose Armor! (-45% Defense for 3 turns).`);
                     } else if (skill.id === "frostbolt") {
-                        enemyDebuffs.atk_debuff = 2;
-                        logEvent(`Turn ${turn}: ${enemy.name} is chilled by Frostbolt! (-25% Attack for 2 turns).`);
+                        enemyDebuffs.atk_debuff = 3;
+                        logEvent(`Turn ${turn}: ${enemy.name} is chilled by Frostbolt! (-15% Attack for 3 turns).`);
                     } else if (skill.id === "judgement_of_light" || skill.id === "chain_lightning") {
                         const lowAlly = getLowestHpAlly(activeHeroes);
                         if (lowAlly) {
-                            const heal = Math.round(finalAtk * 0.5);
+                            const heal = Math.round(finalAtk * 0.30);
                             lowAlly.currentHp = Math.min(lowAlly.stats.hp, lowAlly.currentHp + heal);
                             logEvent(`Turn ${turn}: ${skill.name} restores +${heal} HP to ${lowAlly.obj.name}.`, null, lowAlly.obj.id);
                         }
                     } else if (skill.id === "consecration") {
-                        enemyDebuffs.consecration = Math.round(finalAtk * 0.5);
-                        enemyDebuffs.consecration_duration = 3;
+                        const addDot = Math.round(finalAtk * 0.55);
+                        enemyDebuffs.consecration = (enemyDebuffs.consecration_duration > 0 ? enemyDebuffs.consecration : 0) + addDot;
+                        enemyDebuffs.consecration_duration = Math.max(enemyDebuffs.consecration_duration || 0, 3);
                         logEvent(`Turn ${turn}: ${h.obj.name} consecrates the ground, dealing holy fire DOT to ${enemy.name} for 3 turns.`);
                     } else if (skill.id === "wolf_companion" || skill.id === "corruption" || skill.id === "moonfire") {
-                        const dotMult = skill.id === "corruption" ? 0.65 : 0.4;
-                        const dotDur = skill.id === "moonfire" ? 2 : 3;
-                        enemyDebuffs.consecration = Math.round(finalAtk * dotMult);
-                        enemyDebuffs.consecration_duration = dotDur;
+                        const dotMult = skill.id === "corruption" ? 0.65 : 0.45;
+                        const dotDur = 3;
+                        const addDot = Math.round(finalAtk * dotMult);
+                        enemyDebuffs.consecration = (enemyDebuffs.consecration_duration > 0 ? enemyDebuffs.consecration : 0) + addDot;
+                        enemyDebuffs.consecration_duration = Math.max(enemyDebuffs.consecration_duration || 0, dotDur);
                         logEvent(`Turn ${turn}: ${skill.name} afflicts ${enemy.name} with periodic damage (${enemyDebuffs.consecration}/turn for ${dotDur} turns).`);
                     } else if (skill.id === "drain_life") {
-                        const selfHeal = Math.max(1, Math.round(dmg * 0.8));
+                        const selfHeal = Math.max(1, Math.round(dmg * 0.45));
                         h.currentHp = Math.min(h.stats.hp, h.currentHp + selfHeal);
                         logEvent(`Turn ${turn}: ${h.obj.name} siphons +${selfHeal} HP with Drain Life!`, null, h.obj.id);
                     }
                 }
             } 
             else if (skill.id === "shield_block") {
-                h.buffs.def_mult = Math.max(h.buffs.def_mult, 1.6);
-                h.buffs.def_duration = Math.max(h.buffs.def_duration, 2);
-                logEvent(`Turn ${turn}: ${h.obj.name} triggers Shield Block! (+60% Defense for 2 turns).`, null, h.obj.id);
+                h.buffs.def_mult = Math.max(h.buffs.def_mult, 1.45);
+                h.buffs.def_duration = Math.max(h.buffs.def_duration || 0, 2);
+                h.buffs.taunt = Math.max(h.buffs.taunt || 0, 2);
+                const bashDmg = Math.max(2, Math.round(finalDef * 0.9 - enemy.def * 0.4));
+                enemyHp -= bashDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} triggers Shield Block (+45% Defense) and bashes ${enemy.name} for ${bashDmg} damage!`, "enemy", h.obj.id);
             }
             else if (skill.id === "taunt") {
-                h.buffs.taunt = 1;
-                logEvent(`Turn ${turn}: ${h.obj.name} taunts ${enemy.name}, drawing all threat weight!`, null, h.obj.id);
+                h.buffs.taunt = 2;
+                h.buffs.def_mult = Math.max(h.buffs.def_mult, 1.25);
+                h.buffs.def_duration = Math.max(h.buffs.def_duration || 0, 2);
+                const strikeDmg = Math.max(2, Math.round(finalAtk * 1.15 - enemy.def * 0.5));
+                enemyHp -= strikeDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} taunts ${enemy.name} and strikes for ${strikeDmg} damage!`, "enemy", h.obj.id);
             }
             else if (skill.id === "dire_bear_form") {
-                h.buffs.def_mult = Math.max(h.buffs.def_mult, 1.5);
-                h.buffs.def_duration = Math.max(h.buffs.def_duration || 0, 3);
+                h.buffs.def_mult = Math.max(h.buffs.def_mult, 1.45);
+                h.buffs.def_duration = Math.max(h.buffs.def_duration || 0, 2);
                 h.buffs.taunt = 2;
-                logEvent(`Turn ${turn}: ${h.obj.name} shifts into Dire Bear Form! (+50% Defense & Taunt for 2 turns).`, null, h.obj.id);
+                const maulDmg = Math.max(2, Math.round(finalAtk * 1.3 - enemy.def * 0.5));
+                enemyHp -= maulDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} shifts into Dire Bear Form (+45% Def & Taunt) and mauls ${enemy.name} for ${maulDmg} damage!`, "enemy", h.obj.id);
             }
             else if (skill.id === "amplify_magic") {
-                h.buffs.atk = 0.45;
+                h.buffs.atk = 0.5;
                 h.buffs.atk_duration = 3;
-                logEvent(`Turn ${turn}: ${h.obj.name} casts Amplify Magic! (+45% Spell Damage for 3 turns).`, null, h.obj.id);
+                const pulseDmg = Math.max(2, Math.round(finalAtk * 1.15 - enemy.def * 0.5));
+                enemyHp -= pulseDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} casts Amplify Magic (+50% Spell Damage) and pulses for ${pulseDmg} arcane damage!`, "enemy", h.obj.id);
             }
             else if (skill.id === "trueshot_aura") {
                 activeHeroes.forEach(ally => {
                     if (ally.currentHp > 0) {
-                        ally.buffs.atk = Math.max(ally.buffs.atk, 0.2);
+                        ally.buffs.atk = Math.max(ally.buffs.atk, 0.25);
                         ally.buffs.atk_duration = Math.max(ally.buffs.atk_duration || 0, 3);
                     }
                 });
-                logEvent(`Turn ${turn}: ${h.obj.name} activates Trueshot Aura! (+20% Party Attack for 3 turns).`, null, "all");
+                const shotDmg = Math.max(2, Math.round(finalAtk * 1.2 - enemy.def * 0.5));
+                enemyHp -= shotDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} activates Trueshot Aura (+25% Party Attack) and fires for ${shotDmg} damage!`, "enemy", "all");
             }
             else if (skill.id === "curse_of_weakness") {
                 enemyDebuffs.atk_debuff = 3;
                 enemyDebuffs.sunder = 3;
-                logEvent(`Turn ${turn}: ${h.obj.name} curses ${enemy.name} with Weakness! (-25% Atk & -30% Def for 3 turns).`);
+                const curseDmg = Math.max(2, Math.round(finalAtk * 1.25 - enemy.def * 0.5));
+                enemyHp -= curseDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} curses ${enemy.name} with Weakness (${curseDmg} shadow dmg, -15% Atk & -30% Def for 3 turns).`, "enemy");
             }
             else if (skill.id === "blink") {
-                h.buffs.evasion = 0.3;
+                h.buffs.evasion = 0.35;
                 h.buffs.evasion_duration = 2;
-                logEvent(`Turn ${turn}: ${h.obj.name} blinks away! (+30% Evasion for 2 turns).`, null, h.obj.id);
+                const blinkDmg = Math.max(2, Math.round(finalAtk * 1.1 - enemy.def * 0.5));
+                enemyHp -= blinkDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} blinks away (+35% Evasion) and blasts ${enemy.name} for ${blinkDmg} damage!`, "enemy", h.obj.id);
             }
             else if (skill.id === "feint") {
                 h.feint = 3;
-                logEvent(`Turn ${turn}: ${h.obj.name} uses Feint to drop all aggression.`);
+                const feintDmg = Math.max(2, Math.round(finalAtk * 1.25 - enemy.def * 0.5));
+                enemyHp -= feintDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} uses Feint (${feintDmg} damage) and drops threat.`, "enemy");
             }
             else if (skill.id === "adrenaline_rush" || skill.id === "windfury_totem") {
-                h.buffs.atk = skill.id === "windfury_totem" ? 0.35 : 0.3;
+                h.buffs.atk = skill.id === "windfury_totem" ? 0.4 : 0.35;
                 h.buffs.crit = skill.id === "windfury_totem" ? 20 : 25;
                 h.buffs.atk_duration = 3;
-                logEvent(`Turn ${turn}: ${h.obj.name} triggers ${skill.name}! (+${Math.round(h.buffs.atk * 100)}% Attack, +${h.buffs.crit}% Crit for 3 turns).`, null, h.obj.id);
+                const rushDmg = Math.max(2, Math.round(finalAtk * 1.3 - enemy.def * 0.5));
+                enemyHp -= rushDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} triggers ${skill.name} (${rushDmg} damage, +${Math.round(h.buffs.atk * 100)}% Attack, +${h.buffs.crit}% Crit for 3 turns).`, "enemy", h.obj.id);
             }
             else if (skill.id === "flash_heal" || skill.id === "healing_wave") {
                 const lowAlly = getLowestHpAlly(activeHeroes);
                 if (lowAlly) {
-                    const healMult = skill.id === "healing_wave" ? 1.7 : 1.8;
-                    const heal = Math.round(finalAtk * healMult);
+                    const missing = Math.max(0, lowAlly.stats.hp - lowAlly.currentHp);
+                    const baseMult = skill.id === "healing_wave" ? 0.22 : 0.25;
+                    const heal = Math.round(finalAtk * baseMult + missing * 0.38);
                     lowAlly.currentHp = Math.min(lowAlly.stats.hp, lowAlly.currentHp + heal);
-                    logEvent(`Turn ${turn}: ${h.obj.name} casts ${skill.name} on ${lowAlly.obj.name}, restoring +${heal} HP.`, null, lowAlly.obj.id);
+                    const smiteDmg = Math.max(2, Math.round(finalAtk * 0.90 - enemy.def * 0.4));
+                    enemyHp -= smiteDmg;
+                    logEvent(`Turn ${turn}: ${h.obj.name} casts ${skill.name} on ${lowAlly.obj.name}, restoring +${heal} HP and smiting ${enemy.name} for ${smiteDmg}.`, "enemy", lowAlly.obj.id);
                 }
             }
             else if (skill.id === "renew" || skill.id === "rejuvenation") {
                 const lowAlly = getLowestHpAlly(activeHeroes);
                 if (lowAlly) {
-                    const hotMult = skill.id === "rejuvenation" ? 0.75 : 0.6;
-                    lowAlly.buffs.renew = Math.round(finalAtk * hotMult);
+                    const missing = Math.max(0, lowAlly.stats.hp - lowAlly.currentHp);
+                    const hotMult = skill.id === "rejuvenation" ? 0.14 : 0.12;
+                    lowAlly.buffs.renew = Math.round(finalAtk * hotMult + missing * 0.12);
                     lowAlly.buffs.renew_duration = 3;
-                    logEvent(`Turn ${turn}: ${h.obj.name} applies ${skill.name} on ${lowAlly.obj.name} (healing +${lowAlly.buffs.renew} HP/turn for 3 turns).`, null, lowAlly.obj.id);
+                    const initHeal = Math.round(finalAtk * 0.12 + missing * 0.18);
+                    lowAlly.currentHp = Math.min(lowAlly.stats.hp, lowAlly.currentHp + initHeal);
+                    const smiteDmg = Math.max(2, Math.round(finalAtk * 0.85 - enemy.def * 0.4));
+                    enemyHp -= smiteDmg;
+                    logEvent(`Turn ${turn}: ${h.obj.name} applies ${skill.name} on ${lowAlly.obj.name} (+${initHeal} HP now, +${lowAlly.buffs.renew} HP/turn for 3 turns).`, "enemy", lowAlly.obj.id);
                 }
             }
             else if (skill.id === "power_word_shield") {
                 const lowAlly = getLowestHpAlly(activeHeroes);
                 if (lowAlly) {
-                    lowAlly.buffs.shield = Math.round(finalAtk * 2.0);
+                    const missing = Math.max(0, lowAlly.stats.hp - lowAlly.currentHp);
+                    lowAlly.buffs.shield = Math.round(finalAtk * 0.40 + missing * 0.28);
                     lowAlly.buffs.shield_duration = 2;
-                    logEvent(`Turn ${turn}: ${h.obj.name} wraps ${lowAlly.obj.name} in Power Word: Shield! Absorbs up to ${lowAlly.buffs.shield} damage for 2 turns.`, null, lowAlly.obj.id);
+                    const smiteDmg = Math.max(2, Math.round(finalAtk * 0.85 - enemy.def * 0.4));
+                    enemyHp -= smiteDmg;
+                    logEvent(`Turn ${turn}: ${h.obj.name} wraps ${lowAlly.obj.name} in Power Word: Shield (absorbs ${lowAlly.buffs.shield} dmg) and smites for ${smiteDmg}!`, "enemy", lowAlly.obj.id);
                 }
             }
             else if (skill.id === "prayer_of_healing" || skill.id === "tranquility") {
-                const healMult = skill.id === "tranquility" ? 1.3 : 1.0;
-                const heal = Math.round(finalAtk * healMult);
+                const baseMult = skill.id === "tranquility" ? 0.16 : 0.14;
+                let avgHeal = 0;
                 activeHeroes.forEach(ally => {
                     if (ally.currentHp > 0) {
+                        const missing = Math.max(0, ally.stats.hp - ally.currentHp);
+                        const heal = Math.round(finalAtk * baseMult + missing * 0.25);
+                        avgHeal = heal;
                         ally.currentHp = Math.min(ally.stats.hp, ally.currentHp + heal);
                     }
                 });
-                logEvent(`Turn ${turn}: ${h.obj.name} casts ${skill.name}! Restores +${heal} HP to all party members.`, null, "all");
+                const smiteDmg = Math.max(2, Math.round(finalAtk * 0.85 - enemy.def * 0.4));
+                enemyHp -= smiteDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} casts ${skill.name}! Restores +${avgHeal} HP to all party members.`, "enemy", "all");
             }
             else if (skill.id === "holy_light") {
                 const lowAlly = getLowestHpAlly(activeHeroes);
                 if (lowAlly) {
-                    const heal = Math.round(finalAtk * 1.6);
+                    const missing = Math.max(0, lowAlly.stats.hp - lowAlly.currentHp);
+                    const heal = Math.round(finalAtk * 0.25 + missing * 0.36);
                     lowAlly.currentHp = Math.min(lowAlly.stats.hp, lowAlly.currentHp + heal);
-                    logEvent(`Turn ${turn}: ${h.obj.name} channels Holy Light on ${lowAlly.obj.name} for +${heal} HP.`, null, lowAlly.obj.id);
+                    const smiteDmg = Math.max(2, Math.round(finalAtk * 0.90 - enemy.def * 0.4));
+                    enemyHp -= smiteDmg;
+                    logEvent(`Turn ${turn}: ${h.obj.name} channels Holy Light on ${lowAlly.obj.name} for +${heal} HP.`, "enemy", lowAlly.obj.id);
                 }
             }
             else if (skill.id === "blessing_of_kings" || skill.id === "strength_totem") {
                 activeHeroes.forEach(ally => {
                     if (ally.currentHp > 0) {
                         ally.buffs.kings = true;
-                        ally.buffs.kings_duration = 3;
+                        ally.buffs.kings_duration = 4;
                     }
                 });
-                logEvent(`Turn ${turn}: ${h.obj.name} casts ${skill.name} on the group! (+15% stats for 3 turns).`, null, "all");
+                const strikeDmg = Math.max(2, Math.round(finalAtk * 1.15 - enemy.def * 0.5));
+                enemyHp -= strikeDmg;
+                logEvent(`Turn ${turn}: ${h.obj.name} casts ${skill.name} on the group (+15% stats for 4 turns) and strikes for ${strikeDmg}!`, "enemy", "all");
             }
             else if (skill.id === "lay_on_hands") {
                 const lowAlly = getLowestHpAlly(activeHeroes);
                 if (lowAlly && !h.layOnHandsUsed) {
                     h.layOnHandsUsed = true;
-                    lowAlly.currentHp = lowAlly.stats.hp; // Full heal!
-                    logEvent(`Turn ${turn}: Paladin ${h.obj.name} lay hands on ${lowAlly.obj.name}! Instantly restored to FULL HP!`, null, lowAlly.obj.id);
+                    const missing = Math.max(0, lowAlly.stats.hp - lowAlly.currentHp);
+                    const maxRestore = Math.round(lowAlly.stats.hp * 0.15 + missing * 0.55);
+                    lowAlly.currentHp = Math.min(lowAlly.stats.hp, lowAlly.currentHp + maxRestore);
+                    lowAlly.buffs.shield = Math.max(lowAlly.buffs.shield || 0, Math.round(finalAtk * 0.55));
+                    lowAlly.buffs.shield_duration = 2;
+                    logEvent(`Turn ${turn}: Paladin ${h.obj.name} lay hands on ${lowAlly.obj.name}, restoring +${maxRestore} HP!`, null, lowAlly.obj.id);
                 } else if (lowAlly) {
                     // Fallback to basic heal if lay on hands already used
-                    const heal = Math.round(finalAtk * 1.0);
+                    const missing = Math.max(0, lowAlly.stats.hp - lowAlly.currentHp);
+                    const heal = Math.round(finalAtk * 0.22 + missing * 0.28);
                     lowAlly.currentHp = Math.min(lowAlly.stats.hp, lowAlly.currentHp + heal);
                     logEvent(`Turn ${turn}: Paladin ${h.obj.name} heals ${lowAlly.obj.name} for +${heal} HP.`, null, lowAlly.obj.id);
                 }
             }
         });
 
-        if (enemyHp <= 0) break; // Enemy is slain!
-
         // --- 2. ENEMY PHASE: Enemy executes its custom turn skill rotation ---
+        const isDyingBlow = (enemyHp <= 0);
+
         if (enemyStunned) {
             enemyStunned = false;
             logEvent(`Turn ${turn}: ${enemy.name} is STUNNED and cannot act!`);
         } else {
-            const enemyRotation = ENEMY_ROTATIONS_DATABASE[enemy.id] || [];
-            const enemyActionIndex = (turn - 1) % 5;
+            const defaultRotation = [
+                { name: "Savage Strike", action: "attack", mult: 1.15, desc: "Strikes with ferocious force" },
+                { name: "Basic Swing", action: "basic" },
+                { name: "Sweeping Cleave", action: "aoe", mult: 0.75, desc: "Cleaves across the party" },
+                { name: "Hardened Stance", action: "def_buff", mult: 0.25, duration: 2, desc: "Braces for incoming attacks (+25% Def)" },
+                { name: "Crushing Blow", action: "attack", mult: 1.3, desc: "Delivers a heavy crushing blow" }
+            ];
+            const enemyRotation = ENEMY_ROTATIONS_DATABASE[enemy.id] || defaultRotation;
+            const enemyActionIndex = (turn - 1) % (enemyRotation.length || 5);
             const action = enemyRotation[enemyActionIndex] || { name: "Basic Swing", action: "basic" };
 
             // Find current target based on threat weight or active taunt
@@ -3119,8 +3230,42 @@ function resolveCombat(quest) {
             }
 
             // Calculate final enemy Attack value
-            let finalEnemyAtk = enemy.atk * enemyBuffs.atk;
-            if (enemyDebuffs.atk_debuff > 0) finalEnemyAtk *= 0.75; // reduced by Frostbolt
+            let finalEnemyAtk = enemy.atk * enemyBuffs.atk * (isDyingBlow ? 0.75 : 1.0);
+            if (enemyDebuffs.atk_debuff > 0) finalEnemyAtk *= 0.85; // reduced by Frostbolt / Curse of Weakness
+
+            // Hyperbolic armor constant scaled to enemy level so tanks mitigate 45-68% while never taking 1 dmg
+            const armorK = 55 + (enemy.level * 2.8);
+            const isRaidEncounter = (zone.type === "raid");
+            const isBossEncounter = enemy.name.includes("[Boss]") || enemy.name.includes("[Elite]");
+            const splashRatio = isRaidEncounter ? 0.48 : (isBossEncounter ? 0.42 : 0.38);
+
+            const applyDamageToHero = (th, rawMult, ignoreDefFlag) => {
+                let currentDef = th.stats.def * th.buffs.def_mult * (th.buffs.kings ? 1.15 : 1.0);
+                if (ignoreDefFlag) currentDef *= 0.5;
+                const mitigation = armorK / (armorK + currentDef);
+                let dmg = Math.max(1, Math.round(finalEnemyAtk * rawMult * mitigation));
+                if (th.buffs.shield > 0) {
+                    if (th.buffs.shield >= dmg) {
+                        th.buffs.shield -= dmg;
+                        dmg = 0;
+                    } else {
+                        dmg -= th.buffs.shield;
+                        th.buffs.shield = 0;
+                    }
+                }
+                if (dmg > 0) {
+                    if (isDyingBlow) {
+                        th.currentHp = Math.max(1, th.currentHp - dmg);
+                    } else {
+                        th.currentHp -= dmg;
+                    }
+                    if (th.currentHp <= 0) {
+                        logEvent(`💀 ${th.obj.name} is knocked out!`, th.obj.id);
+                        clearHeroBuffs(th);
+                    }
+                }
+                return dmg;
+            };
 
             if (targetHero) {
                 if (action.action === "basic" || action.action === "attack") {
@@ -3130,33 +3275,11 @@ function resolveCombat(quest) {
                     if (Math.random() < targetHero.buffs.evasion) {
                         logEvent(`Turn ${turn}: ${enemy.name} casts ${action.name} at ${targetHero.obj.name}, but they EVADE the attack!`);
                     } else {
-                        let currentDef = targetHero.stats.def * targetHero.buffs.def_mult * (targetHero.buffs.kings ? 1.15 : 1.0);
-                        if (action.ignoreDef) currentDef *= 0.5;
-
-                        let dmg = finalEnemyAtk * mult - currentDef;
-                        if (dmg < 1) dmg = 1;
-                        dmg = Math.round(dmg);
-
-                        // Absorb shield check
-                        if (targetHero.buffs.shield > 0) {
-                            if (targetHero.buffs.shield >= dmg) {
-                                targetHero.buffs.shield -= dmg;
-                                logEvent(`Turn ${turn}: ${enemy.name} uses ${action.name}. Power Word: Shield absorbs all ${dmg} damage (${targetHero.buffs.shield} remaining).`, targetHero.obj.id);
-                                dmg = 0;
-                            } else {
-                                dmg -= targetHero.buffs.shield;
-                                logEvent(`Turn ${turn}: ${enemy.name} uses ${action.name}. Power Word: Shield absorbs ${targetHero.buffs.shield} damage, breaking the barrier.`, targetHero.obj.id);
-                                targetHero.buffs.shield = 0;
-                            }
-                        }
-
+                        const dmg = applyDamageToHero(targetHero, mult, action.ignoreDef);
                         if (dmg > 0) {
-                            targetHero.currentHp -= dmg;
                             logEvent(`Turn ${turn}: ${enemy.name} triggers ${action.name} on ${targetHero.obj.name}, dealing ${dmg} damage.`, targetHero.obj.id);
-                            if (targetHero.currentHp <= 0) {
-                                logEvent(`💀 ${targetHero.obj.name} is knocked out!`, targetHero.obj.id);
-                                clearHeroBuffs(targetHero);
-                            }
+                        } else {
+                            logEvent(`Turn ${turn}: ${enemy.name} uses ${action.name}. Power Word: Shield absorbs the blow on ${targetHero.obj.name}.`, targetHero.obj.id);
                         }
 
                         if (action.stun && targetHero.currentHp > 0) {
@@ -3164,67 +3287,79 @@ function resolveCombat(quest) {
                             logEvent(`Turn ${turn}: ${targetHero.obj.name} is stunned for 1 turn!`, targetHero.obj.id);
                         }
                     }
+
+                    // Multi-hero collateral cleave / shockwave pressure so the entire party experiences combat damage
+                    if (livingHeroes.length > 1) {
+                        const cappedSplashMult = Math.min(mult, 1.35) * splashRatio;
+                        livingHeroes.forEach(th => {
+                            if (th !== targetHero && th.currentHp > 0) {
+                                applyDamageToHero(th, cappedSplashMult, false);
+                            }
+                        });
+                    }
                 } 
-                else if (action.action === "atk_buff") {
-                    enemyBuffs.atk = 1.0 + action.mult;
-                    enemyBuffs.atk_duration = action.duration;
-                    logEvent(`Turn ${turn}: ${enemy.name} casts ${action.name}! ${action.desc}`);
-                } 
-                else if (action.action === "def_buff") {
-                    enemyBuffs.def = 1.0 + action.mult;
-                    enemyBuffs.def_duration = action.duration;
-                    logEvent(`Turn ${turn}: ${enemy.name} casts ${action.name}! ${action.desc}`);
-                } 
-                else if (action.action === "evade_buff") {
-                    enemyBuffs.evade = action.mult;
-                    enemyBuffs.evade_duration = action.duration;
-                    logEvent(`Turn ${turn}: ${enemy.name} casts ${action.name}! ${action.desc}`);
+                else if (action.action === "atk_buff" || action.action === "def_buff" || action.action === "evade_buff" || action.action === "atk_debuff") {
+                    if (action.action === "atk_buff") {
+                        enemyBuffs.atk = 1.0 + action.mult;
+                        enemyBuffs.atk_duration = action.duration;
+                    } else if (action.action === "def_buff") {
+                        enemyBuffs.def = 1.0 + action.mult;
+                        enemyBuffs.def_duration = action.duration;
+                    } else if (action.action === "evade_buff") {
+                        enemyBuffs.evade = action.mult;
+                        enemyBuffs.evade_duration = action.duration;
+                    } else if (action.action === "atk_debuff") {
+                        const debuffCap = Math.min(0.28, action.mult || 0.20);
+                        livingHeroes.forEach(th => {
+                            th.buffs.atk = Math.max(-0.28, Math.min(th.buffs.atk, -debuffCap));
+                            th.buffs.atk_duration = Math.max(th.buffs.atk_duration || 0, action.duration || 2);
+                        });
+                    }
+                    const strikeDmg = applyDamageToHero(targetHero, 0.85, false);
+                    livingHeroes.forEach(th => {
+                        if (th !== targetHero && th.currentHp > 0) {
+                            applyDamageToHero(th, 0.85 * splashRatio * 0.85, false);
+                        }
+                    });
+                    logEvent(`Turn ${turn}: ${enemy.name} casts ${action.name} (${action.desc || "empowering itself"}) and strikes ${targetHero.obj.name} for ${strikeDmg} damage!`, targetHero.obj.id);
                 } 
                 else if (action.action === "aoe") {
                     logEvent(`Turn ${turn}: ${enemy.name} unleashes ${action.name} (AoE)!`, "all");
                     livingHeroes.forEach(th => {
-                        let currentDef = th.stats.def * th.buffs.def_mult * (th.buffs.kings ? 1.15 : 1.0);
-                        let dmg = finalEnemyAtk * action.mult - currentDef;
-                        if (dmg < 1) dmg = 1;
-                        dmg = Math.round(dmg);
-
-                        if (th.buffs.shield > 0) {
-                            if (th.buffs.shield >= dmg) {
-                                th.buffs.shield -= dmg;
-                                logEvent(`- Shield absorbs all ${dmg} damage on ${th.obj.name} (${th.buffs.shield} remaining).`, th.obj.id);
-                                dmg = 0;
-                            } else {
-                                dmg -= th.buffs.shield;
-                                logEvent(`- Shield absorbs ${th.buffs.shield} damage on ${th.obj.name}, breaking.`, th.obj.id);
-                                th.buffs.shield = 0;
-                            }
-                        }
-
+                        const dmg = applyDamageToHero(th, action.mult || 0.8, false);
                         if (dmg > 0) {
-                            th.currentHp -= dmg;
                             logEvent(`- Hits ${th.obj.name} for ${dmg} damage.`, th.obj.id);
-                            if (th.currentHp <= 0) {
-                                logEvent(`💀 ${th.obj.name} is knocked out!`, th.obj.id);
-                                clearHeroBuffs(th);
-                            }
+                        } else {
+                            logEvent(`- Shield absorbs ${action.name} on ${th.obj.name}.`, th.obj.id);
                         }
                     });
                 } 
                 else if (action.action === "dot") {
                     logEvent(`Turn ${turn}: ${enemy.name} sprays ${action.name}!`, "all");
                     livingHeroes.forEach(th => {
-                        th.dot = Math.round(finalEnemyAtk * action.mult);
-                        th.dot_duration = action.duration;
-                        logEvent(`- ${th.obj.name} is burning with DOT (takes ${th.dot} damage/turn for ${action.duration} turns).`);
+                        let currentDef = th.stats.def * th.buffs.def_mult * (th.buffs.kings ? 1.15 : 1.0);
+                        const mitigation = armorK / (armorK + currentDef);
+                        th.dot = Math.max(1, Math.round(finalEnemyAtk * (action.mult || 0.45) * 0.70 * mitigation));
+                        th.dot_duration = action.duration || 3;
+                        const initDmg = applyDamageToHero(th, (action.mult || 0.45) * 0.65, false);
+                        logEvent(`- ${th.obj.name} takes ${initDmg} damage and burns with DOT (${th.dot} damage/turn for ${th.dot_duration} turns).`);
                     });
                 } 
                 else if (action.action === "heal") {
-                    let healAmt = action.value || Math.round(enemyMaxHp * action.mult);
-                    enemyHp = Math.min(enemyMaxHp, enemyHp + healAmt);
-                    logEvent(`Turn ${turn}: ${enemy.name} uses ${action.name}, regenerating +${healAmt} HP (${enemyHp}/${enemyMaxHp} HP).`, "enemy");
+                    const cappedMult = Math.min(action.mult || 0.07, 0.07);
+                    let healAmt = isDyingBlow ? 0 : (action.value ? Math.min(action.value, Math.round(enemyMaxHp * 0.07)) : Math.round(enemyMaxHp * cappedMult));
+                    if (!isDyingBlow) enemyHp = Math.min(enemyMaxHp, enemyHp + healAmt);
+                    const strikeDmg = applyDamageToHero(targetHero, 0.8, false);
+                    livingHeroes.forEach(th => {
+                        if (th !== targetHero && th.currentHp > 0) {
+                            applyDamageToHero(th, 0.8 * splashRatio * 0.8, false);
+                        }
+                    });
+                    logEvent(`Turn ${turn}: ${enemy.name} uses ${action.name}, regenerating +${healAmt} HP and striking ${targetHero.obj.name} for ${strikeDmg} damage!`, "enemy");
                 }
             }
         }
+        if (enemyHp <= 0) break; // Enemy slain on turn 1 after trading blows!
 
         // --- 3. POST-TURN PERIODIC TICKS (HOTs / DOTs) ---
         activeHeroes.forEach(h => {
@@ -3240,8 +3375,18 @@ function resolveCombat(quest) {
 
             // Damage Over Time (DOT) Bleeds/Fires
             if (h.dot_duration > 0) {
-                h.currentHp -= h.dot;
-                logEvent(`Turn ${turn} (Tick): ${h.obj.name} takes ${h.dot} periodic fire damage (${Math.max(0, h.currentHp)}/${h.stats.hp} HP).`, h.obj.id);
+                let tickDmg = h.dot;
+                if (h.buffs.shield > 0) {
+                    if (h.buffs.shield >= tickDmg) {
+                        h.buffs.shield -= tickDmg;
+                        tickDmg = 0;
+                    } else {
+                        tickDmg -= h.buffs.shield;
+                        h.buffs.shield = 0;
+                    }
+                }
+                h.currentHp -= tickDmg;
+                logEvent(`Turn ${turn} (Tick): ${h.obj.name} takes ${tickDmg} periodic fire damage (${Math.max(0, h.currentHp)}/${h.stats.hp} HP).`, h.obj.id);
                 h.dot_duration--;
                 if (h.currentHp <= 0) {
                     logEvent(`💀 ${h.obj.name} is knocked out!`, h.obj.id);

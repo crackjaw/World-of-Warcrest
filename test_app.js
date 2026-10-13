@@ -1350,10 +1350,176 @@ test('Phase 4: Alchemy Elixirs, Raid Flasks, Active Buffs & Offline Progress', (
     assert.ok(app.gameState.customers.length > 0, 'Offline progress should spawn shop customers');
 });
 
+test('Combat Balance Audit: all 62 encounters are challenging but winnable with skill selection', () => {
+    const assignSkills = (hero) => {
+        const maxAp = app.getHeroMaxAp(hero);
+        const db = (app.SKILL_DATABASE[hero.class] || []).filter(s => hero.level >= s.levelReq);
+        const byId = {};
+        db.forEach(s => { byId[s.id] = s; });
+        const plans = {
+            Warrior: ['sunder_armor', 'shield_block', 'shield_slam', 'heroic_strike', 'taunt'],
+            Paladin: ['blessing_of_kings', 'holy_light', 'judgement_of_light', 'consecration', 'lay_on_hands'],
+            Druid: ['dire_bear_form', 'rejuvenation', 'moonfire', 'tranquility', 'ferocious_bite'],
+            Priest: ['power_word_shield', 'renew', 'flash_heal', 'prayer_of_healing', 'mind_blast'],
+            Shaman: ['strength_totem', 'windfury_totem', 'chain_lightning', 'healing_wave', 'lightning_bolt'],
+            Mage: ['amplify_magic', 'frostbolt', 'pyroblast', 'fireball', 'blink'],
+            Rogue: ['expose_armor', 'adrenaline_rush', 'eviscerate', 'sinister_strike', 'feint'],
+            Ranger: ['hunters_mark', 'trueshot_aura', 'rapid_volley', 'aimed_shot', 'wolf_companion'],
+            Warlock: ['curse_of_weakness', 'corruption', 'chaos_doom', 'shadow_bolt', 'drain_life']
+        };
+        const desired = plans[hero.class] || [];
+        const rotation = [null, null, null, null, null];
+        let usedAp = 0;
+        for (let i = 0; i < 5; i++) {
+            const skill = desired[i] && byId[desired[i]];
+            if (skill && (usedAp + skill.cost <= maxAp)) {
+                rotation[i] = skill.id;
+                usedAp += skill.cost;
+            }
+        }
+        const sortedByCost = [...db].sort((a, b) => b.cost - a.cost);
+        for (let i = 0; i < 5; i++) {
+            if (!rotation[i]) {
+                for (const s of sortedByCost) {
+                    if (usedAp + s.cost <= maxAp) {
+                        rotation[i] = s.id;
+                        usedAp += s.cost;
+                        break;
+                    }
+                }
+            }
+        }
+        hero.skills = rotation;
+    };
 
+    const equipPreFightGear = (hero, enemyLevel) => {
+        const isTank = hero.class === 'Warrior' || hero.class === 'Paladin' || hero.class === 'Druid';
+        const isCaster = hero.class === 'Mage' || hero.class === 'Priest' || hero.class === 'Warlock';
+        const isDual = hero.class === 'Rogue' || hero.class === 'Ranger';
+        if (enemyLevel <= 3) {
+            if (enemyLevel >= 2) hero.equipment.weapon = 'copper_sword';
+        } else if (enemyLevel <= 10) {
+            hero.equipment.weapon = 'copper_sword';
+            hero.equipment.secondary = isTank ? 'copper_shield' : (isCaster ? 'spell_tome' : null);
+            hero.equipment.head = 'linen_hood';
+            hero.equipment.chest = isTank ? 'worn_leather_vest' : 'linen_robe';
+            hero.equipment.boots = 'heavy_copper_boots';
+            hero.equipment.waist = 'linen_belt';
+            hero.equipment.legs = 'linen_pants';
+        } else if (enemyLevel <= 20) {
+            hero.equipment.weapon = 'iron_broadsword';
+            hero.equipment.secondary = isTank ? 'iron_shield' : (isCaster ? 'spell_tome' : (isDual ? 'copper_sword' : null));
+            hero.equipment.head = 'wastes_barbute';
+            hero.equipment.chest = isTank ? 'tough_leather_jerkin' : 'woolen_robe';
+            hero.equipment.boots = 'raptor_leather_boots';
+            hero.equipment.shoulders = 'heavy_copper_spauldors';
+            hero.equipment.hands = 'woolen_gloves';
+            hero.equipment.waist = 'copper_waistband';
+            hero.equipment.legs = 'runner_leather_leggings';
+            hero.equipment.back = 'worn_cape';
+            hero.equipment.ring = 'copper_band';
+            hero.equipment.trinket = 'lucky_spider_charm';
+        } else if (enemyLevel <= 32) {
+            hero.equipment.weapon = 'golem_crusher';
+            hero.equipment.secondary = isTank ? 'iron_shield' : (isCaster ? 'tome_of_intellect' : (isDual ? 'iron_broadsword' : null));
+            hero.equipment.head = 'arcane_hood';
+            hero.equipment.chest = isTank ? 'steel_platebody' : 'woolen_robe';
+            hero.equipment.boots = 'raptor_leather_boots';
+            hero.equipment.shoulders = 'wastes_shoulders';
+            hero.equipment.hands = 'iron_gauntlets';
+            hero.equipment.waist = 'copper_waistband';
+            hero.equipment.legs = 'iron_greaves';
+            hero.equipment.back = 'cloak_of_the_wastes';
+            hero.equipment.neck = 'glowing_cat_eye_necklace';
+            hero.equipment.ring = 'iron_ring_of_crit';
+            hero.equipment.trinket = 'essence_of_the_golem';
+        } else if (enemyLevel <= 45) {
+            hero.equipment.weapon = 'sparkgears_steamaxe';
+            hero.equipment.secondary = isTank ? 'asylum_warden_shield' : (isCaster ? 'tome_of_arcane_brilliance' : (isDual ? 'golem_crusher' : null));
+            hero.equipment.head = 'arcane_hood';
+            hero.equipment.chest = isTank ? 'steel_platebody' : 'arbiters_crimson_robes';
+            hero.equipment.boots = 'dark_iron_boots';
+            hero.equipment.shoulders = 'wastes_shoulders';
+            hero.equipment.hands = 'iron_warden_gauntlets';
+            hero.equipment.waist = 'houndmasters_belt';
+            hero.equipment.legs = 'iron_greaves';
+            hero.equipment.back = 'enchanted_wanderer_cloak';
+            hero.equipment.neck = 'talisman_of_defense';
+            hero.equipment.ring = 'fen_serpent_ring';
+            hero.equipment.trinket = 'suncrests_holy_sigil';
+        } else if (enemyLevel <= 56) {
+            hero.equipment.weapon = 'runeblade_of_the_void';
+            hero.equipment.secondary = isTank ? 'asylum_warden_shield' : (isCaster ? 'bloodflame_orb' : (isDual ? 'sandscalps_sunderer' : null));
+            hero.equipment.head = 'sandscalps_war_mask';
+            hero.equipment.chest = isTank ? 'general_ironfists_chest' : 'bloodflame_essence_chest';
+            hero.equipment.boots = 'dark_iron_boots';
+            hero.equipment.shoulders = 'blighted_spaulders';
+            hero.equipment.hands = 'shadowprophets_handwraps';
+            hero.equipment.waist = 'core_leather_belt';
+            hero.equipment.legs = 'feral_greaves';
+            hero.equipment.back = 'glacier_cloak';
+            hero.equipment.neck = 'gorgon_eye_necklace';
+            hero.equipment.ring = 'drowned_fane_ring';
+            hero.equipment.trinket = 'prophets_void_sigil';
+        } else {
+            hero.equipment.weapon = 'pyroclast_hammer';
+            hero.equipment.secondary = isTank ? 'deathcharger_shield' : (isCaster ? 'tome_of_arcane_brilliance' : (isDual ? 'ashfall_runeblade' : null));
+            hero.equipment.head = 'darkforge_crown';
+            hero.equipment.chest = isTank ? 'darkforge_chestplate' : 'bloodflame_essence_chest';
+            hero.equipment.boots = 'sabertooth_boots';
+            hero.equipment.shoulders = 'blighted_spaulders';
+            hero.equipment.hands = 'ironfist_gauntlets';
+            hero.equipment.waist = 'core_leather_belt';
+            hero.equipment.legs = 'feral_greaves';
+            hero.equipment.back = 'glacier_cloak';
+            hero.equipment.neck = 'watersprout_pendant';
+            hero.equipment.ring = 'thornwood_ring';
+            hero.equipment.trinket = 'void_infused_talisman';
+        }
+        const full = app.getHeroFullStats(hero);
+        hero.max_hp = full.hp;
+        hero.hp = full.hp;
+    };
 
+    let totalEncounters = 0;
+    app.ZONE_DATABASE.forEach(zone => {
+        zone.enemies.forEach(enemy => {
+            totalEncounters++;
+            const type = zone.type || 'zone';
+            let classes = ['Warrior', 'Priest', 'Ranger'];
+            if (type === 'zone') {
+                classes = enemy.level <= 4 ? ['Warrior'] : (enemy.level <= 15 ? ['Warrior', 'Priest'] : ['Warrior', 'Priest', 'Ranger']);
+            } else if (type === 'dungeon') {
+                classes = ['Warrior', 'Priest', 'Mage', 'Rogue'];
+            } else if (type === 'raid') {
+                classes = ['Warrior', 'Paladin', 'Priest', 'Druid', 'Shaman', 'Mage', 'Warlock', 'Rogue', 'Ranger', 'Mage'];
+            }
 
+            app.gameState.heroes = [];
+            app.gameState.itemMeta = {};
+            const heroIds = [];
+            classes.forEach((cls, idx) => {
+                const h = app.createHero(`${cls}_${idx + 1}`, cls);
+                h.id = `bal_hero_${idx + 1}`;
+                h.level = enemy.level;
+                equipPreFightGear(h, enemy.level);
+                assignSkills(h);
+                app.gameState.heroes.push(h);
+                heroIds.push(h.id);
+            });
 
+            const res = app.resolveCombat({ id: 'q_bal', heroIds, enemyId: enemy.id, zoneId: zone.id });
+            assert.strictEqual(res.won, true, `Geared party with skill selection should win against ${enemy.name}`);
+            assert.ok(res.turns >= 2, `${enemy.name} should last multiple turns (got ${res.turns})`);
 
-
-
+            let remHp = 0, maxHp = 0;
+            app.gameState.heroes.forEach(h => {
+                maxHp += h.max_hp;
+                remHp += Math.max(0, res.finalHeroStates[h.id].hp);
+            });
+            const survPct = (remHp / maxHp) * 100;
+            assert.ok(survPct < 96, `${enemy.name} should deal meaningful damage to the party (SurvHP%: ${survPct.toFixed(1)}%)`);
+        });
+    });
+    assert.strictEqual(totalEncounters, 69, 'All 69 encounters across 20 zones/dungeons/raids should be verified');
+});
